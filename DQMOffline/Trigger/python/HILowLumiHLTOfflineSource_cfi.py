@@ -205,10 +205,271 @@ def getFullTrackVPSet():
     
     return ret
 
+
+
+def getHIPbPbGammaVPSet():
+    ret=cms.VPSet()
+    thresholds = [10, 15, 20, 30, 40, 50, 60]
+    etas = ["_Eta1p5", "_Eta2p1", "_Eta3p1"]
+    cent = ["", "_Cent30_50", "_Cent50_100"]
+
+    zAndMuList = ["HLT_HIDoublePhoton15_Eta1p5_Mass50_1000_v", "HLT_HIDoublePhoton15_Eta2p1_Mass50_1000_R9Cut_v", "HLT_HIDoublePhoton15_Eta2p5_Mass50_1000_R9SigmaHECut_v", "HLT_HIL3Mu3Eta2p5_HIPhoton10Eta1p5_v", "HLT_HIL3Mu3Eta2p5_HIPhoton15Eta1p5_v", "HLT_HIL3Mu3Eta2p5_HIPhoton20Eta1p5_v", "HLT_HIL3Mu3Eta2p5_HIPhoton30Eta1p5_v", "HLT_HIL3Mu3Eta2p5_HIPhoton40Eta1p5_v", "HLT_HIL3Mu3Eta2p5_HIPhoton50Eta1p5_v"]
+
+    for t in thresholds:
+        for e in etas:
+            for c in cent:
+    
+                if t > 50:
+                    if  c != "":
+                        continue
+                
+                partialPathName = "HLT_HISinglePhoton"+str(t)+e+c+"_v"
+                
+                hltPbPbGamma =  cms.PSet(
+                    triggerSelection = cms.string(partialPathName+"*"),
+                    handlerType = cms.string("FromHLT"),
+                    partialPathName = cms.string(partialPathName),
+                    partialFilterName  = cms.string("hltHighPtPbPbGamma"),
+                    dqmhistolabel  = cms.string("hltHighPtPbPbGamma"),
+                    mainDQMDirname = cms.untracked.string(dirname),
+                    singleObjectsPreselection = cms.string("1==1"),
+                    singleObjectDrawables =  cms.VPSet(
+                        cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                        cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-3.1), max = cms.double(3.1)),
+                        cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+                    combinedObjectSelection =  cms.string("1==1"),
+                    combinedObjectSortCriteria = cms.string("at(0).pt"),
+                    combinedObjectDimension = cms.int32(1),
+                    combinedObjectDrawables =  cms.VPSet()
+                    )
+                ret.append(hltPbPbGamma)
+                
+
+    for z in zAndMuList:
+        partialPathName = z
+        
+        hltPbPbGamma =  cms.PSet(
+            triggerSelection = cms.string(partialPathName+"*"),
+            handlerType = cms.string("FromHLT"),
+            partialPathName = cms.string(partialPathName),
+            partialFilterName  = cms.string("hltHighPtPbPbGamma"),
+            dqmhistolabel  = cms.string("hltHighPtPbPbGamma"),
+            mainDQMDirname = cms.untracked.string(dirname),
+            singleObjectsPreselection = cms.string("1==1"),
+            singleObjectDrawables =  cms.VPSet(
+                cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-2.6), max = cms.double(2.6)),
+                cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                ),
+            combinedObjectSelection =  cms.string("1==1"),
+            combinedObjectSortCriteria = cms.string("at(0).pt"),
+            combinedObjectDimension = cms.int32(1),
+            combinedObjectDrawables =  cms.VPSet()
+            )
+        ret.append(hltPbPbGamma)
+                
+    return ret
+
+def getHIPbPbJetVPSet():
+    ret=cms.VPSet()
+    thresholds = [40, 60, 80, 100, 110, 120]
+    etas = ["_Eta2p5", "_Eta2p5", "_Eta2p1", "_Eta5p1"]
+    rParam = ["2", "4", "4", "4"]
+    cent = ["", "_Cent30_50", "_Cent50_100"]
+
+    multiJetList = ["HLT_PuAK4CaloJet80_Jet35_Eta1p1_v", "HLT_PuAK4CaloJet80_Jet35_Eta0p7_v", "HLT_PuAK4CaloJet100_Jet35_Eta1p1_v", "HLT_PuAK4CaloJet100_Jet35_Eta0p7_v", "HLT_PuAK4CaloJet80_45_45_Eta2p1_v"]
+
+    for t in thresholds:
+        for pos in [0,1,2,3]:
+            for c in cent:
+    
+                if t > 100:
+                    if etas[pos] == "_Eta2p5":
+                        continue
+                    if t > 110:
+                        if  c != "":
+                            continue
+                
+                partialPathName = "HLT_PuAK"+rParam[pos]+"CaloJet"+str(t)+etas[pos]+c+"_v"
+                
+                hltPbPbJet =  cms.PSet(
+                    triggerSelection = cms.string(partialPathName+"*"),
+                    handlerType = cms.string("FromHLT"),
+                    partialPathName = cms.string(partialPathName),
+                    partialFilterName  = cms.string("hltHighPtPbPbJet"),
+                    dqmhistolabel  = cms.string("hltHighPtPbPbJet"),
+                    mainDQMDirname = cms.untracked.string(dirname),
+                    singleObjectsPreselection = cms.string("1==1"),
+                    singleObjectDrawables =  cms.VPSet(
+                        cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                        cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-5.1), max = cms.double(5.1)),
+                        cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+                    combinedObjectSelection =  cms.string("1==1"),
+                    combinedObjectSortCriteria = cms.string("at(0).pt"),
+                    combinedObjectDimension = cms.int32(1),
+                    combinedObjectDrawables =  cms.VPSet()
+                    )
+                ret.append(hltPbPbJet)
+
+
+    for t in thresholds:
+        if t > 110:
+            continue
+
+        partialPathName = "HLT_HIL3Mu3Eta2p5_PuAK4CaloJet"+str(t)+"Eta2p1_v"
+        
+        hltPbPbJet =  cms.PSet(
+            triggerSelection = cms.string(partialPathName+"*"),
+            handlerType = cms.string("FromHLT"),
+            partialPathName = cms.string(partialPathName),
+            partialFilterName  = cms.string("hltHighPtPbPbJet"),
+            dqmhistolabel  = cms.string("hltHighPtPbPbJet"),
+            mainDQMDirname = cms.untracked.string(dirname),
+            singleObjectsPreselection = cms.string("1==1"),
+            singleObjectDrawables =  cms.VPSet(
+                cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-2.1), max = cms.double(2.1)),
+                cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+            combinedObjectSelection =  cms.string("1==1"),
+            combinedObjectSortCriteria = cms.string("at(0).pt"),
+            combinedObjectDimension = cms.int32(1),
+            combinedObjectDrawables =  cms.VPSet()
+            )
+        ret.append(hltPbPbJet)
+
+    for m in multiJetList:                
+        partialPathName = m
+                
+        hltPbPbJet =  cms.PSet(
+            triggerSelection = cms.string(partialPathName+"*"),
+            handlerType = cms.string("FromHLT"),
+            partialPathName = cms.string(partialPathName),
+            partialFilterName  = cms.string("hltHighPtPbPbJet"),
+            dqmhistolabel  = cms.string("hltHighPtPbPbJet"),
+            mainDQMDirname = cms.untracked.string(dirname),
+            singleObjectsPreselection = cms.string("1==1"),
+            singleObjectDrawables =  cms.VPSet(
+                cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-2.1), max = cms.double(2.1)),
+                cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+            combinedObjectSelection =  cms.string("1==1"),
+            combinedObjectSortCriteria = cms.string("at(0).pt"),
+            combinedObjectDimension = cms.int32(1),
+            combinedObjectDrawables =  cms.VPSet()
+            )
+        ret.append(hltPbPbJet)
+   
+
+    return ret
+
+
+def getHIPPJetVPSet():
+    ret=cms.VPSet()
+    thresholds = [40, 60, 80, 100, 110, 120]
+    etas = ["_Eta2p5", "_Eta2p5", "_Eta2p1", "_Eta5p1"]
+    rParam = ["2", "4", "4", "4"]
+
+    pfCalo = ["PF", "Calo"]
+
+    multiJetList = ["HLT_AK4CaloJet80_Jet35_Eta1p1_v", "HLT_AK4CaloJet80_Jet35_Eta0p7_v", "HLT_AK4CaloJet100_Jet35_Eta1p1_v", "HLT_AK4CaloJet100_Jet35_Eta0p7_v", "HLT_AK4CaloJet80_45_45_Eta2p1_v"]
+
+    for t in thresholds:
+        for pos in [0,1,2,3]:
+            for pfc in pfCalo:
+                
+                if t > 100:
+                    if etas[pos] == "_Eta2p5":
+                        continue
+           
+                if pfc == "PF" and rParam[pos] == "2":
+                    continue
+                    
+                partialPathName = "HLT_AK"+rParam[pos]+pfc+"Jet"+str(t)+etas[pos]+"_v"
+                
+                hltPPJet =  cms.PSet(
+                    triggerSelection = cms.string(partialPathName+"*"),
+                    handlerType = cms.string("FromHLT"),
+                    partialPathName = cms.string(partialPathName),
+                    partialFilterName  = cms.string("hltHighPtPPJet"),
+                    dqmhistolabel  = cms.string("hltHighPtPPJet"),
+                    mainDQMDirname = cms.untracked.string(dirname),
+                    singleObjectsPreselection = cms.string("1==1"),
+                    singleObjectDrawables =  cms.VPSet(
+                        cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                        cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-5.1), max = cms.double(5.1)),
+                        cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+                    combinedObjectSelection =  cms.string("1==1"),
+                    combinedObjectSortCriteria = cms.string("at(0).pt"),
+                    combinedObjectDimension = cms.int32(1),
+                    combinedObjectDrawables =  cms.VPSet()
+                    )
+                ret.append(hltPPJet)
+
+
+    for t in thresholds:
+        if t > 110:
+            continue
+
+        partialPathName = "HLT_HIL3Mu3Eta2p5_AK4CaloJet"+str(t)+"Eta2p1_v"
+        
+        hltPPJet =  cms.PSet(
+            triggerSelection = cms.string(partialPathName+"*"),
+            handlerType = cms.string("FromHLT"),
+            partialPathName = cms.string(partialPathName),
+            partialFilterName  = cms.string("hltHighPtPPJet"),
+            dqmhistolabel  = cms.string("hltHighPtPPJet"),
+            mainDQMDirname = cms.untracked.string(dirname),
+            singleObjectsPreselection = cms.string("1==1"),
+            singleObjectDrawables =  cms.VPSet(
+                cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-2.1), max = cms.double(2.1)),
+                cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+            combinedObjectSelection =  cms.string("1==1"),
+            combinedObjectSortCriteria = cms.string("at(0).pt"),
+            combinedObjectDimension = cms.int32(1),
+            combinedObjectDrawables =  cms.VPSet()
+            )
+        ret.append(hltPPJet)
+
+    for m in multiJetList:                
+        partialPathName = m
+                
+        hltPPJet =  cms.PSet(
+            triggerSelection = cms.string(partialPathName+"*"),
+            handlerType = cms.string("FromHLT"),
+            partialPathName = cms.string(partialPathName),
+            partialFilterName  = cms.string("hltHighPtPPJet"),
+            dqmhistolabel  = cms.string("hltHighPtPPJet"),
+            mainDQMDirname = cms.untracked.string(dirname),
+            singleObjectsPreselection = cms.string("1==1"),
+            singleObjectDrawables =  cms.VPSet(
+                cms.PSet (name = cms.string("pt"), expression = cms.string("pt"), bins = cms.int32(100), min = cms.double(10), max = cms.double(300)),
+                cms.PSet (name = cms.string("eta"), expression = cms.string("eta"), bins = cms.int32(100), min = cms.double(-2.1), max = cms.double(2.1)),
+                cms.PSet (name = cms.string("phi"), expression = cms.string("phi"), bins = cms.int32(100), min = cms.double(-3.15), max = cms.double(3.15))
+                        ),
+            combinedObjectSelection =  cms.string("1==1"),
+            combinedObjectSortCriteria = cms.string("at(0).pt"),
+            combinedObjectDimension = cms.int32(1),
+            combinedObjectDrawables =  cms.VPSet()
+            )
+        ret.append(hltPPJet)
+   
+
+    return ret
+            
 def getHILowLumi():
     ret = cms.VPSet()
     ret.extend(getHILowLumiTriggers())
     ret.extend(getFullTrackVPSet())
+    ret.extend(getHIPbPbJetVPSet())
+    ret.extend(getHIPbPbGammaVPSet())
+    ret.extend(getHIPPJetVPSet())
     return ret
 
 dirname = "HLT/HI/"
