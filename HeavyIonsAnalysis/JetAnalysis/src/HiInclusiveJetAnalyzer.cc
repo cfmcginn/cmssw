@@ -356,6 +356,7 @@ HiInclusiveJetAnalyzer::beginJob() {
   }
 
   if(doJetConstituents_){
+    t->Branch("nJtConstituents",&jets_.nJtConstituents);
     t->Branch("jtConstituentsId",&jets_.jtConstituentsId);
     t->Branch("jtConstituentsE",&jets_.jtConstituentsE);
     t->Branch("jtConstituentsPt",&jets_.jtConstituentsPt);
@@ -546,7 +547,7 @@ HiInclusiveJetAnalyzer::beginJob() {
     t->Branch("refm",jets_.refm,"refm[nref]/F");
     t->Branch("refarea",jets_.refarea,"refarea[nref]/F");
 
-    if(doNewJetVars_){
+    if(/*doNewJetVars_*/false){
       t->Branch("refnCands",jets_.refnCands,"refnCands[nref]/I");
       t->Branch("refnChCands",jets_.refnChCands,"refnChCands[nref]/I");
       t->Branch("refnNeCands",jets_.refnNeCands,"refnNeCands[nref]/I");
@@ -651,7 +652,7 @@ HiInclusiveJetAnalyzer::beginJob() {
       t->Branch("refSubJetM",&jets_.refSubJetM);
     }
 
-    if(doJetConstituents_){
+    if(false/*doJetConstituents_*/){
       t->Branch("refConstituentsId",&jets_.refConstituentsId);
       t->Branch("refConstituentsE",&jets_.refConstituentsE);
       t->Branch("refConstituentsPt",&jets_.refConstituentsPt);
@@ -693,7 +694,7 @@ HiInclusiveJetAnalyzer::beginJob() {
       t->Branch("gendphijt",jets_.gendphijt,"gendphijt[ngen]/F");
       t->Branch("gendrjt",jets_.gendrjt,"gendrjt[ngen]/F");
 
-      if(doNewJetVars_){
+      if(/*doNewJetVars_*/false){
 	t->Branch("gennCands",jets_.gennCands,"gennCands[ngen]/I");
 	t->Branch("gennChCands",jets_.gennChCands,"gennChCands[ngen]/I");
 	t->Branch("gennNeCands",jets_.gennNeCands,"gennNeCands[ngen]/I");
@@ -785,7 +786,7 @@ HiInclusiveJetAnalyzer::beginJob() {
         t->Branch("genSubJetM",&jets_.genSubJetM);
       }
 
-      if(doJetConstituents_){
+      if(false/*doJetConstituents_*/){
 	t->Branch("genConstituentsId",&jets_.genConstituentsId);
 	t->Branch("genConstituentsE",&jets_.genConstituentsE);
 	t->Branch("genConstituentsPt",&jets_.genConstituentsPt);
@@ -990,6 +991,7 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
   }
 
   if( doJetConstituents_ ){
+    jets_.nJtConstituents.clear();
     jets_.jtConstituentsId.clear();
     jets_.jtConstituentsE.clear();
     jets_.jtConstituentsPt.clear();
@@ -1031,6 +1033,7 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
 
   for(unsigned int j = 0; j < jets->size(); ++j){
     const reco::Jet& jet = (*jets)[j];
+
 
     if(jet.pt() < jetPtMin_) continue;
     if (useJEC_ && usePat_){
@@ -1473,8 +1476,8 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
 
     //! fill in the new jet varibles
     if(doNewJetVars_)
-      fillNewJetVarsRecoJet(jet);
-
+      fillNewJetVarsRecoJet(jet, jets_.rawpt[jets_.nref]);
+  
     jets_.jttau1[jets_.nref] = -999.;
     jets_.jttau2[jets_.nref] = -999.;
     jets_.jttau3[jets_.nref] = -999.;
@@ -1574,7 +1577,7 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
 	  jets_.subid[jets_.nref] = gencon->collisionId();
 	}
 
-	if(doNewJetVars_)
+	if(doNewJetVars_/*false*/)
 	  fillNewJetVarsRefJet(*genjet);
 	
         if(doGenSubJets_)
@@ -1854,7 +1857,7 @@ HiInclusiveJetAnalyzer::analyze(const Event& iEvent,
         jets_.genm  [jets_.ngen] = genjet.mass();
 	jets_.geny  [jets_.ngen] = genjet.eta();
 
-	if(doNewJetVars_)
+	if(/*doNewJetVars_*/false)
 	  fillNewJetVarsGenJet(genjet);      
 
         if(doGenTaus_) {
@@ -2141,7 +2144,7 @@ void HiInclusiveJetAnalyzer::analyzeSubjets(const reco::Jet jet) {
 
 
 //--------------------------------------------------------------------------------------------------
-void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet){
+void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet, const float rawpt){
 
   int nCands = 0;
   int nChCands = 0;
@@ -2272,6 +2275,10 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet){
   int   hfhadNConst = 0;
   float hfemSumConst = 0;
   int   hfemNConst = 0;
+
+
+  //  if(jet.pt() > 20) std::cout << jetName_ << ", For jet of pt, rawpt, eta, phi: " << jet.pt() << ", " << rawpt << ", " << jet.eta() << ", " << jet.phi() << ", number of daughters are... " << jet.numberOfDaughters() << std::endl;
+  
   if(jet.numberOfDaughters()>0) {
     nCands = jet.numberOfDaughters();
     for (unsigned k = 0; k < jet.numberOfDaughters(); ++k) {
@@ -2281,6 +2288,8 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet){
       }else{
 	nChCands++;
       }
+
+      //      if(jet.pt() > 20) std::cout << " Daughter " << k << ": " << dp.pt() << std::endl;
 
       float ptcand = dp.pt();
       int pfid     = dp.pdgId();
@@ -2348,7 +2357,7 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet){
       jcid.push_back(dp.pdgId());
       jcE.push_back(jc.e());
       jcpt.push_back(jc.pt());
-      jcphi.push_back(jc.phi());
+      jcphi.push_back(jc.phi_std());
       jceta.push_back(jc.eta());
       jcm.push_back(jc.m());
       
@@ -2575,6 +2584,7 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet){
   jets_.jtSDrm2[jets_.nref] = sd_rm2;
   jets_.jtSDrm3[jets_.nref] = sd_rm3;
 
+  jets_.nJtConstituents.push_back((int)jcpt.size());
   jets_.jtConstituentsId.push_back(jcid);
   jets_.jtConstituentsE.push_back(jcE);
   jets_.jtConstituentsPt.push_back(jcpt);
@@ -3246,12 +3256,14 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsGenJet(const reco::GenJet jet){
   std::vector<float> jcSDeta;
   std::vector<float> jcSDphi;
   std::vector<float> jcSDm;
-  
+
   if(jet.numberOfDaughters()>0) {
     nCands = jet.numberOfDaughters();
+
+
     for (unsigned k = 0; k < jet.numberOfDaughters(); ++k) {
       const reco::Candidate & dp = *jet.daughter(k);
-
+     
       if(dp.charge() == 0){
 	nNeCands++;
       }else{

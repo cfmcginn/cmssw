@@ -7,6 +7,8 @@
 
 #include <TTree.h>
 
+#include <vector>
+
 class PuWithNtuple : public PileUpSubtractor {
  public:
   PuWithNtuple(const edm::ParameterSet& iConfig, edm::ConsumesCollector && iC);
@@ -21,12 +23,14 @@ class PuWithNtuple : public PileUpSubtractor {
     bool sumRecHits_;
     bool dropZeroTowers_;
 
+    bool isOrphanInputRun_;
+
     double minimumTowersFraction_;
 
     ~PuWithNtuple(){;}
 
     edm::Service<TFileService> fs_;
-    TTree* tree_;
+    TTree* treeWithOrphan_;
 
     int Neta_;
 
@@ -39,6 +43,19 @@ class PuWithNtuple : public PileUpSubtractor {
 
     double etaedge[42];
     
+
+    std::vector<int> iEtaVal;
+    std::vector<double> etaVal;
+    std::vector<int> nPhi;
+    std::vector<int> nTow;
+    std::vector<std::vector<int>> iPhiVal;
+    std::vector<std::vector<double>> phiVal;
+    std::vector<std::vector<double>> etaVal_PerPhi;
+    std::vector<std::vector<double>> etVal;
+    std::vector<std::vector<double>> etValSubMean;
+    std::vector<std::vector<double>> etValSubMeanRMSZeroed;
+    std::vector<std::vector<int>> isInJet;
+
 };
 
 

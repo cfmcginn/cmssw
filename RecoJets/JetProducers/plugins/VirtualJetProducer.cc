@@ -46,6 +46,8 @@
 #include <cmath>
 #include <vdt/vdtMath.h>
 
+#include "TLorentzVector.h"
+
 using namespace std;
 
 
@@ -353,6 +355,8 @@ void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   edm::Handle< std::vector<edm::FwdPtr<reco::PFCandidate> > > pfinputsHandleAsFwdPtr; 
   edm::Handle< std::vector<edm::FwdPtr<pat::PackedCandidate> > > packedinputsHandleAsFwdPtr; 
   
+  //  std::cout << src_ << std::endl;
+
   bool isView = iEvent.getByToken(input_candidateview_token_, inputsHandle);
   if ( isView ) {
     if ( verbosity_ >= 1 ) { 
@@ -360,7 +364,7 @@ void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
     for (size_t i = 0; i < inputsHandle->size(); ++i) {
       inputs_.push_back(inputsHandle->ptrAt(i));
       // if ( verbosity_ >= 1 ) {
-      //   std::cout << "input particle " << i << " pt = " << inputs_[i]->pt() << " phi: " << inputs_[i]->phi() << " eta: " << inputs_[i]->eta() << " " << std::endl;
+      //      std::cout << "input particle " << i << " pt = " << inputs_[i]->pt() << " phi: " << inputs_[i]->phi() << " eta: " << inputs_[i]->eta() << " " << std::endl;
       // }
     }
   } else {
@@ -387,26 +391,130 @@ void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
     }
   }
   LogDebug("VirtualJetProducer") << "Got inputs\n";
-  
+
   // Convert candidates to fastjet::PseudoJets.
   // Also correct to Primary Vertex. Will modify fjInputs_
   // and use inputs_
+  //  std::cout << "Jet: " << jetType_ << ", " << jetAlgorithm_ << ", " << moduleLabel_ << std::endl;
+  //  std::cout << "Start fjinputs: " << fjInputs_.size() << std::endl;
   fjInputs_.reserve(inputs_.size());
+
   inputTowers();
+  //  std::cout << "post input towers fjinputs: " << fjInputs_.size() << std::endl;
+  /*
+  if(jetType_.find("BasicJet") != std::string::npos && jetAlgorithm_.find("AntiKt") != std::string::npos && rParam_ < .35){
+    Double_t phiBins72[73] = {-3.14159,-3.05433,-2.96706,-2.87979,-2.79253,-2.70526,-2.61799,-2.53073,-2.44346,-2.35619,-2.26893,-2.18166,-2.0944,-2.00713,-1.91986,-1.8326,-1.74533,-1.65806,-1.5708,-1.48353,-1.39626,-1.309,-1.22173,-1.13446,-1.0472,-0.959931,-0.872665,-0.785398,-0.698132,-0.610865,-0.523599,-0.436332,-0.349066,-0.261799,-0.174533,-0.0872664,0,0.0872664,0.174533,0.2618,0.349066,0.436332,0.523599,0.610865,0.698132,0.785398,0.872665,0.959931,1.0472,1.13446,1.22173,1.309,1.39626,1.48353,1.5708,1.65806,1.74533,1.8326,1.91986,2.00713,2.0944,2.18166,2.26893,2.35619,2.44346,2.53073,2.61799,2.70526,2.79253,2.87979,2.96706,3.05433,3.14159};
+
+    Double_t phiBins36[37] = {-3.14159,-2.96706,-2.79253,-2.61799,-2.44346,-2.26893,-2.0944,-1.91986,-1.74533,-1.5708,-1.39626,-1.22173,-1.0472,-0.872665,-0.698132,-0.523599,-0.349066,-0.174533,0,0.174533,0.349066,0.523599,0.698132,0.872665,1.0472,1.22173,1.39626,1.5708,1.74533,1.91986,2.0944,2.26893,2.44346,2.61799,2.79253,2.96706,3.14159};
+    
+    Double_t etaBins[42] = {0,0.087,0.174,0.261,0.348,0.435,0.522,0.609,0.696,0.783,0.87,0.957,1.044,1.131,1.218,1.305,1.392,1.479,1.566,1.653,1.74,1.83,1.93,2.043,2.172,2.322,2.5,2.65,2.853,3,3.139,3.314,3.489,3.664,3.839,4.013,4.191,4.363,4.538,4.716,4.889,5.191};
+
+    std::vector<fastjet::PseudoJet> appendToInputs;
+
+    for(int iter = 0; iter < 30; iter++){
+      if(fabs(etaBins[iter]) > 2.6) continue;
+
+      Double_t etaVal = (etaBins[iter+1] + etaBins[iter])/2.;
+
+      if(iter < 20){
+	for(int phiIter = 0; phiIter < 72; phiIter++){
+	  Double_t phiVal = (phiBins72[phiIter+1] + phiBins72[phiIter])/2.;
+
+	  TLorentzVector tempTL1;
+	  tempTL1.SetPtEtaPhiM(.001, etaVal, phiVal, 0.);
+	  TLorentzVector tempTL2;
+	  tempTL2.SetPtEtaPhiM(.001, -etaVal, phiVal, 0.);
+	  
+	  fastjet::PseudoJet temp1(tempTL1.Px(), tempTL1.Py(), tempTL1.Pz(), tempTL1.Energy());
+	  fastjet::PseudoJet temp2(tempTL2.Px(), tempTL2.Py(), tempTL2.Pz(), tempTL2.Energy());
+
+	  appendToInputs.push_back(temp1);
+	  appendToInputs.back().set_user_index(-1);
+	  appendToInputs.push_back(temp2);
+	  appendToInputs.back().set_user_index(-1);
+	}
+      }
+      else{
+	for(int phiIter = 0; phiIter < 36; phiIter++){
+          Double_t phiVal = (phiBins36[phiIter+1] + phiBins36[phiIter])/2.;
+
+          TLorentzVector tempTL1;
+          tempTL1.SetPtEtaPhiM(.001, etaVal, phiVal, 0.);
+          TLorentzVector tempTL2;
+          tempTL2.SetPtEtaPhiM(.001, -etaVal, phiVal, 0.);
+
+	  fastjet::PseudoJet temp1(tempTL1.Px(), tempTL1.Py(), tempTL1.Pz(), tempTL1.Energy());
+	  fastjet::PseudoJet temp2(tempTL2.Px(), tempTL2.Py(), tempTL2.Pz(), tempTL2.Energy());
+
+          appendToInputs.push_back(temp1);
+	  appendToInputs.back().set_user_index(-1);
+          appendToInputs.push_back(temp2);
+	  appendToInputs.back().set_user_index(-1);
+
+        }
+      }
+    }
+
+    std::cout << "Go thru fjInputs: " << std::endl;
+
+    int numberSwapped = 0;
+    for(unsigned int iter = 0; iter < fjInputs_.size(); iter++){
+      //      std::cout << " " << iter << ": " << fjInputs_.at(iter).eta() << std::endl;      
+
+      int pos = 0;
+      while((int)appendToInputs.size() > pos){
+	
+	if(reco::deltaR(appendToInputs.at(pos).eta(), appendToInputs.at(pos).phi(), fjInputs_.at(iter).eta(), fjInputs_.at(iter).phi()) < .08/2.){
+	  appendToInputs.erase(appendToInputs.begin()+pos);
+	  numberSwapped++;
+	}
+	else pos++;
+      }
+    }
+
+    fjInputs_.insert(fjInputs_.end(), appendToInputs.begin(), appendToInputs.end());
+
+    int midRapNum = 0;
+
+    for(unsigned int iter = 0; iter < fjInputs_.size(); iter++){
+      if(fabs(fjInputs_.at(iter).eta()) < 2.6) midRapNum++;
+    }
+
+    std::cout << "Final inputs size: " << fjInputs_.size() << std::endl;
+    std::cout << "Final midRapNum: " << midRapNum << std::endl;
+    std::cout << "Number swapped: " << numberSwapped << std::endl;
+  }
+  */
   LogDebug("VirtualJetProducer") << "Inputted towers\n";
 
   // For Pileup subtraction using offset correction:
   // Subtract pedestal. 
   if ( doPUOffsetCorr_ ) {
+    //    std::cout << "A: " << fjInputs_.size() << std::endl;
+
      subtractor_->setDefinition(fjJetDefinition_);
+     //    std::cout << "B: " << fjInputs_.size() << std::endl;
+
      subtractor_->reset(inputs_,fjInputs_,fjJets_);
+     //    std::cout << "C: " << fjInputs_.size() << std::endl;
+
      subtractor_->calculatePedestal(fjInputs_); 
+     //    std::cout << "D: " << fjInputs_.size() << std::endl;
+
      subtractor_->subtractPedestal(fjInputs_);    
+     //    std::cout << "E: " << fjInputs_.size() << std::endl;
+
      LogDebug("VirtualJetProducer") << "Subtracted pedestal\n";
   }
   // Run algorithm. Will modify fjJets_ and allocate fjClusterSeq_. 
   // This will use fjInputs_
+
+  //  std::cout << "Prior to running algo check: " << fjInputs_.size() << std::endl;
+
   runAlgorithm( iEvent, iSetup );
+
+  // std::cout << "Post running algo check: " << fjInputs_.size() << std::endl;
+
 
   // if ( doPUOffsetCorr_ ) {
   //    subtractor_->setAlgorithm(fjClusterSeq_);
@@ -419,6 +527,12 @@ void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   // remove occupied towers from the list and recalculate mean and sigma
   // put the initial towers collection to the jet,   
   // and subtract from initial towers in jet recalculated mean and sigma of towers 
+
+  //  std::cout << "Second round of jet pts: " << std::endl;
+  for(unsigned int jtIter = 0; jtIter < fjJets_.size(); jtIter++){
+    //    std::cout << " " << fjJets_.at(jtIter).pt() << ", " << fjJets_.at(jtIter).eta() << ", " << fjJets_.at(jtIter).phi() << std::endl;
+  }
+
   if ( doPUOffsetCorr_ ) {
     LogDebug("VirtualJetProducer") << "Do PUOffsetCorr\n";
     vector<fastjet::PseudoJet> orphanInput;
@@ -426,6 +540,17 @@ void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
     subtractor_->calculatePedestal(orphanInput);
     subtractor_->offsetCorrectJets();
   }
+
+  //  std::cout << "Second round of jet pts: " << std::endl;
+  for(unsigned int jtIter = 0; jtIter < fjJets_.size(); jtIter++){
+    std::vector<fastjet::PseudoJet> constJt = fjJets_.at(jtIter).constituents();
+
+    //    std::cout << " " << fjJets_.at(jtIter).pt() << ", " << fjJets_.at(jtIter).eta() << ", " << fjJets_.at(jtIter).phi() << ", " << constJt.size() << std::endl;
+  }
+
+  //  std::cout << "Jet running complete inputs check: " << fjJets_.size() << std::endl;
+
+
   // Write the output jets.
   // This will (by default) call the member function template
   // "writeJets", but can be overridden. 
@@ -447,12 +572,16 @@ void VirtualJetProducer::produce(edm::Event& iEvent,const edm::EventSetup& iSetu
   
 void VirtualJetProducer::inputTowers( )
 {
+
+  //  std::cout << "Fjinput size: " << fjInputs_.size() << std::endl;
+
   std::vector<edm::Ptr<reco::Candidate> >::const_iterator inBegin = inputs_.begin(),
     inEnd = inputs_.end(), i = inBegin;
   for (; i != inEnd; ++i ) {
     reco::CandidatePtr input = *i;
-    // std::cout << "CaloTowerVI jets " << input->pt() << " " << input->et() << ' '<< input->energy() << ' ' << (isAnomalousTower(input) ? " bad" : " ok") << std::endl; 
-    if (edm::isNotFinite(input->pt()))           continue;
+    //    std::cout << " CaloTowerVI jets " << input->pt() << " " << input->et() << ' '<< input->energy() << ' ' << (isAnomalousTower(input) ? " bad" : " ok") << std::endl; 
+
+    if (edm::isNotFinite(input->pt()))          continue;
     if (input->et()    <inputEtMin_)  continue;
     if (input->energy()<inputEMin_)   continue;
     if (isAnomalousTower(input))      continue;
@@ -461,6 +590,8 @@ void VirtualJetProducer::inputTowers( )
     if (input->pt() < 100 * std::numeric_limits<double>::epsilon() ) { 
       continue;
     }
+    
+
     if (makeCaloJet(jetTypeE)&&doPVCorrection_) {
       const CaloTower* tower=dynamic_cast<const CaloTower*>(input.get());
       math::PtEtaPhiMLorentzVector ct(tower->p4(vertex_));
@@ -538,6 +669,8 @@ void VirtualJetProducer::output(edm::Event & iEvent, edm::EventSetup const& iSet
   // Write jets and constitutents. Will use fjJets_, inputs_
   // and fjClusterSeq_
 
+  //  std::cout << "We doin output?" << std::endl;
+
   if ( writeCompound_ ) {
     // Write jets and subjets
     switch( jetTypeE ) {
@@ -601,6 +734,8 @@ struct Area<reco::CaloJet>{ static float get(reco::CaloJet const & jet) {
 template< typename T >
 void VirtualJetProducer::writeJets( edm::Event & iEvent, edm::EventSetup const& iSetup )
 {
+  //  std::cout << "We doing output with writeJets" << std::endl;
+
   // std::cout << "writeJets " << typeid(T).name() 
   //          << (doRhoFastjet_ ? " doRhoFastjet " : "")
   //          << (doAreaFastjet_ ? " doAreaFastjet " : "")
@@ -691,6 +826,8 @@ void VirtualJetProducer::writeJets( edm::Event & iEvent, edm::EventSetup const& 
     // convert them to CandidatePtr vector
     std::vector<CandidatePtr> constituents =
       getConstituents(fjConstituents);
+
+    //    std::cout << "Jet pt, const in writejets: " << fjJet.pt() << ", " << constituents.size() << std::endl;
 
     // calcuate the jet area
     double jetArea=0.0;
@@ -841,7 +978,7 @@ void VirtualJetProducer::writeCompoundJets(  edm::Event & iEvent, edm::EventSetu
   }
   // put subjets into event record
   subjetHandleAfterPut = iEvent.put( subjetCollection, jetCollInstanceName_ );
-  
+
   // Now create the hard jets with ptr's to the subjets as constituents
   std::vector<math::XYZTLorentzVector>::const_iterator ip4 = p4_hardJets.begin(),
     ip4Begin = p4_hardJets.begin(),
@@ -852,12 +989,19 @@ void VirtualJetProducer::writeCompoundJets(  edm::Event & iEvent, edm::EventSetu
     std::vector<int> & ind = indices[p4_index];
     std::vector<reco::CandidatePtr> i_hardJetConstituents;
     // Add the subjets to the hard jet
+
+    int constLoop = 0;
     for( std::vector<int>::const_iterator isub = ind.begin();
 	 isub != ind.end(); ++isub ) {
       reco::CandidatePtr candPtr( subjetHandleAfterPut, *isub, false );
+
+      constLoop++;
       i_hardJetConstituents.push_back( candPtr );
     }   
+
     reco::Particle::Point point(0,0,0);
+    //    std::cout << "Jet in write " << ip4->pt() << ", " << i_hardJetConstituents.size() << ", " << constLoop << std::endl;
+
     reco::BasicJet toput( *ip4, point, i_hardJetConstituents);
     toput.setJetArea( area_hardJets[ip4 - ip4Begin] );
     jetCollection->push_back( toput );
@@ -875,6 +1019,8 @@ void VirtualJetProducer::writeJetsWithConstituents(  edm::Event & iEvent, edm::E
   if ( verbosity_ >= 1 ) { 
     std::cout << "<VirtualJetProducer::writeJetsWithConstituents (moduleLabel = " << moduleLabel_ << ")>:" << std::endl;
   }
+
+  //  std::cout << "We doin output in jetswith constituents" << std::endl;
 
   // get a list of output jets  MV: make this compatible with template
   std::auto_ptr<reco::PFJetCollection>  jetCollection( new reco::PFJetCollection() );

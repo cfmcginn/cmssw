@@ -199,7 +199,9 @@ akPu3PFJetAnalyzer = inclusiveJetAnalyzer.clone(jetTag = cms.InputTag("akPu3PFpa
 							     doSubJets = cms.untracked.bool(False),
                                                              doGenSubJets = cms.untracked.bool(False),     
                                                              subjetGenTag = cms.untracked.InputTag("ak3GenJets"),
-                                                             doGenTaus = True
+                                                             doGenTaus = True,
+                                                doJetConstituents = True,
+                                                doNewJetVars = True
                                                              )
 
 akPu3PFJetSequence_mc = cms.Sequence(

@@ -85,7 +85,7 @@ private:
   int TaggedJet(reco::Jet calojet, edm::Handle<reco::JetTagCollection > jetTags );
   float getTau(unsigned num, const reco::GenJet object) const;
   void analyzeSubjets(const reco::Jet jet);
-  void fillNewJetVarsRecoJet(const reco::Jet jet);
+  void fillNewJetVarsRecoJet(const reco::Jet jet, const float rawpt);
   void fillNewJetVarsRefJet(const reco::GenJet jet);
   void fillNewJetVarsGenJet(const reco::GenJet jet);
   int  getGroomedGenJetIndex(const reco::GenJet jet) const;
@@ -330,6 +330,7 @@ private:
     std::vector<std::vector<float>> jtSubJetPhi;
     std::vector<std::vector<float>> jtSubJetM;
 
+    std::vector<int> nJtConstituents;
     std::vector<std::vector<int>> jtConstituentsId;
     std::vector<std::vector<float>> jtConstituentsE;
     std::vector<std::vector<float>> jtConstituentsPt;

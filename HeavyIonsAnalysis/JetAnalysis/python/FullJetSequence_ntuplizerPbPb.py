@@ -16,16 +16,16 @@ kt2PFJets = kt4PFJets.clone(rParam       = cms.double(0.2))
 #from HeavyIonsAnalysis.JetAnalysis.jets.akVs2PFJetSequence_PbPb_mc_cff import *
 #from HeavyIonsAnalysis.JetAnalysis.jets.akPu2PFJetSequence_PbPb_mc_cff import *
 #from HeavyIonsAnalysis.JetAnalysis.jets.akCs2PFJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akPu3CaloJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akVs3CaloJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akVs3PFJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akPu3PFJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akCs3PFJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akPu4CaloJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akVs4CaloJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akVs4PFJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akPu4PFJetSequence_PbPb_mc_cff import *
-from HeavyIonsAnalysis.JetAnalysis.jets.akCs4PFJetSequence_PbPb_mc_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akPu3CaloJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akVs3CaloJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akVs3PFJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akPu3PFJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akCs3PFJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akPu4CaloJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akVs4CaloJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akVs4PFJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akPu4PFJetSequence_PbPb_data_cff import *
+from HeavyIonsAnalysis.JetAnalysis.jets.akCs4PFJetSequence_PbPb_data_cff import *
 #from HeavyIonsAnalysis.JetAnalysis.jets.akPu5CaloJetSequence_PbPb_mc_cff import *
 #from HeavyIonsAnalysis.JetAnalysis.jets.akVs5CaloJetSequence_PbPb_mc_cff import *
 #from HeavyIonsAnalysis.JetAnalysis.jets.akVs5PFJetSequence_PbPb_mc_cff import *
@@ -53,6 +53,11 @@ akPu4PFJetsNoLimits = akPu4PFJets.clone(
 
 akPu3PFJets.subtractorName = 'PuWithNtuple'
 akPu3PFJets.minimumTowersFraction = cms.double(0.5)
+akPu3PFJetsNoLimits = akPu3PFJets.clone(
+    subtractorName  = 'PuWithNtuple',
+    minimumTowersFraction = cms.double(0.)
+)
+
 akPu4PFJets.subtractorName = 'PuWithNtuple'
 akPu4PFJets.minimumTowersFraction = cms.double(0.5)
 akPu5PFJets.subtractorName = 'PuWithNtuple'
@@ -66,6 +71,7 @@ akPu5CaloJets.subtractorName = 'PuWithNtuple'
 akPu5CaloJets.minimumTowersFraction = cms.double(0.)
 
 
+
 jetSequences = cms.Sequence(
     PFTowers + 
     #voronoiBackgroundPF+
@@ -76,7 +82,8 @@ jetSequences = cms.Sequence(
     hiFJGridEmptyAreaCalculator + 
 
 
-    akPu4PFJetsNoLimits +
+#    akPu3PFJetsNoLimits +
+#    akPu4PFJetsNoLimits +
 
     #akPu2CaloJets +
     #akPu2PFJets +
@@ -84,17 +91,17 @@ jetSequences = cms.Sequence(
     #akVs2PFJets +
     #akCs2PFJets +
 
-    akPu3CaloJets +
+#    akPu3CaloJets +
     akPu3PFJets +
     #akVs3CaloJets +
     #akVs3PFJets +
-    akCs3PFJets +
+#    akCs3PFJets +
 
-    akPu4CaloJets +
-    akPu4PFJets +
+#    akPu4CaloJets +
+#    akPu4PFJets +
     #akVs4CaloJets +
     #akVs4PFJets +
-    akCs4PFJets +
+#    akCs4PFJets +
 
     #akPu5CaloJets +
     #akPu5PFJets +
@@ -116,17 +123,18 @@ jetSequences = cms.Sequence(
     #akPu2PFJetSequence +
     #akCs2PFJetSequence +
 
-    akPu3CaloJetSequence +
+#    akPu3CaloJetSequence +
     #akVs3CaloJetSequence +
     #akVs3PFJetSequence +
-    akPu3PFJetSequence +
-    akCs3PFJetSequence +
+    akPu3PFJetSequence #+
 
-    akPu4CaloJetSequence +
+#    akCs3PFJetSequence +
+
+#    akPu4CaloJetSequence +
     #akVs4CaloJetSequence +
     #akVs4PFJetSequence +
-    akPu4PFJetSequence +
-    akCs4PFJetSequence #+
+#    akPu4PFJetSequence #+
+#    akCs4PFJetSequence #+
 
     #akPu5CaloJetSequence +
     #akVs5CaloJetSequence +

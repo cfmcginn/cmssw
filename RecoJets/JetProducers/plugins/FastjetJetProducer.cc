@@ -438,8 +438,10 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
 
   if ( !doAreaFastjet_ && !doRhoFastjet_) {
     fjClusterSeq_ = ClusterSequencePtr( new fastjet::ClusterSequence( fjInputs_, *fjJetDefinition_ ) );
+
   } else if (voronoiRfact_ <= 0) {
     fjClusterSeq_ = ClusterSequencePtr( new fastjet::ClusterSequenceArea( fjInputs_, *fjJetDefinition_ , *fjAreaDefinition_ ) );
+
   } else {
     fjClusterSeq_ = ClusterSequencePtr( new fastjet::ClusterSequenceVoronoiArea( fjInputs_, *fjJetDefinition_ , fastjet::VoronoiAreaSpec(voronoiRfact_) ) );
   }
@@ -449,9 +451,7 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
   } else {
     fjJets_.clear();
 
-
     transformer_coll transformers;
-
 
     std::vector<fastjet::PseudoJet> tempJets = fastjet::sorted_by_pt(fjClusterSeq_->inclusive_jets(jetPtMin_));
 
@@ -514,6 +514,7 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
       //subtractor->use_common_bge_for_rho_and_rhom(true);
     }
 
+
     for ( std::vector<fastjet::PseudoJet>::const_iterator ijet = tempJets.begin(),
 	    ijetEnd = tempJets.end(); ijet != ijetEnd; ++ijet ) {
 
@@ -531,7 +532,7 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
       if ( correctShape_ ) {
 	transformedJet = (*subtractor)(transformedJet);
       }
-
+    
       if ( passed ) {
 	fjJets_.push_back( transformedJet );
       }
@@ -572,8 +573,14 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
     }
     fjJets_ = fastjet::sorted_by_pt(fjJets_);
   }
-  
 
+  int totalConst = 0;
+  for(unsigned int iter = 0; iter < fjJets_.size(); iter++){
+    std::vector<fastjet::PseudoJet> constCheck = fjJets_.at(iter).constituents();
+    //    std::cout << " nConst: " << constCheck.size() << std::endl;
+    totalConst += constCheck.size();
+  }
+  
 }
 
 

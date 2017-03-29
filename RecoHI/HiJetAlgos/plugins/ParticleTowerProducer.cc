@@ -103,12 +103,17 @@ ParticleTowerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       geo_ = pG.product();
    }
 
-
    resetTowers(iEvent, iSetup);
 
    edm::Handle<reco::PFCandidateCollection> inputsHandle;
    iEvent.getByToken(src_, inputsHandle);
    
+   int minAbsIEta = 999;
+   int minAbsIPhi = 999;
+   int maxAbsIEta = -999;
+   int maxAbsIPhi = -999;
+
+
    for(reco::PFCandidateCollection::const_iterator ci  = inputsHandle->begin(); ci!=inputsHandle->end(); ++ci)  {
 
     const reco::PFCandidate& particle = *ci;
@@ -120,16 +125,48 @@ ParticleTowerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 
     int ieta = eta2ieta(eta);
     int iphi = phi2iphi(particle.phi(),ieta);
-       
+     
+    if(fabs(ieta) < minAbsIEta) minAbsIEta = fabs(ieta);
+    if(fabs(ieta) > maxAbsIEta) maxAbsIEta = fabs(ieta);
+
+    if(iphi < minAbsIPhi) minAbsIPhi = iphi;
+    if(iphi > maxAbsIPhi) maxAbsIPhi = iphi;
+
+    //    std::cout << "iEta-iphi: " << ieta << "-" << iphi << std::endl;
+  
     if(!useHF_ && abs(ieta) > 29 ) continue;
 
     EtaPhi ep(ieta,iphi);
     towers_[ep] += particle.et();
 
    }
+
+
    
+   for(int iter = 1; iter < 30; iter++){
+     if(iter < 21){
+       for(int iter2 = 1; iter2 < 73; iter2++){
+	 EtaPhi ep(iter, iter2);	 
+	 EtaPhi ep2(-iter, iter2);	 
+	 
+	 towers_[ep] += .001;
+	 towers_[ep2] += .001;
+
+       }
+     }
+     else{
+       for(int iter2 = 1; iter2 < 37; iter2++){
+	 EtaPhi ep(iter, 2*iter2 - 1);	 
+         EtaPhi ep2(-iter, 2*iter2 - 1);
+
+	 towers_[ep] += .001;
+	 towers_[ep2] += .001;
+       }
+     }
+   }
    
    std::auto_ptr<CaloTowerCollection> prod(new CaloTowerCollection());
+
 
    for ( EtaPhiMap::const_iterator iter = towers_.begin();
 	 iter != towers_.end(); ++iter ){
@@ -142,9 +179,13 @@ ParticleTowerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 
      CaloTowerDetId newTowerId(ieta,iphi); // totally dummy id
 
+
+
      if(et>0){
 
        if(!useHF_ && abs(ieta) > 29) continue;
+
+       //       std::cout << "Gets To Non-zeroed eta-phi" << std::endl;
 
        // currently sets et =  pt, mass to zero
        // pt, eta , phi, mass
@@ -152,10 +193,25 @@ ParticleTowerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 
        GlobalPoint dummypoint(p4.x(),p4.y(),p4.z());
        CaloTower newTower(newTowerId,et,0,0,0,0,p4,dummypoint,dummypoint);
+
        prod->push_back(newTower);     
      }
+     /*
+     else{
+
+       //       std::cout << "Gets To Zeroed eta-phi" << std::endl;
+       
+       reco::Particle::PolarLorentzVector p4(.001,ieta2eta(ieta),iphi2phi(iphi,ieta),0.);
+
+       GlobalPoint dummypoint(p4.x(),p4.y(),p4.z());
+       CaloTower newTower(newTowerId,.001,0,0,0,0,p4,dummypoint,dummypoint);
+       prod->push_back(newTower);
+
+     }
+     */
    }
 
+   
    
    //For reference, Calo Tower Constructors
 

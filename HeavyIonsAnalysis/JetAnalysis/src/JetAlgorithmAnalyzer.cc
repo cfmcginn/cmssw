@@ -459,6 +459,7 @@ void JetAlgorithmAnalyzer::produce(edm::Event& iEvent,const edm::EventSetup& iSe
   iEvent.getByLabel(src_,inputsHandle);
   for (size_t i = 0; i < inputsHandle->size(); ++i) {
     inputs_.push_back(inputsHandle->ptrAt(i));
+    
   }
   //   cout<<("VirtualJetProducer") << "Got inputs\n";
 
@@ -512,6 +513,7 @@ void JetAlgorithmAnalyzer::produce(edm::Event& iEvent,const edm::EventSetup& iSe
   // and subtract from initial towers in jet recalculated mean and sigma of towers
   if ( doPUOffsetCorr_ ) {
     vector<fastjet::PseudoJet> orphanInput;
+    std::cout << "Doing the orphan calc" << std::endl;
     subtractor_->calculateOrphanInput(orphanInput);
     fillTowerNtuple(orphanInput,4);
     fillBkgNtuple(subtractor_.get(),4);

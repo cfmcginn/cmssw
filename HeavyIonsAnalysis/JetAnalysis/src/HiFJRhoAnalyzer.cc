@@ -138,7 +138,8 @@ void HiFJRhoAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   iEvent.getByToken(ptJetsToken_, ptJets);
   iEvent.getByToken(areaJetsToken_, areaJets);
   iEvent.getByToken(etaJetsToken_, etaJets);
-  
+
+ 
   int neta = (int)etaRanges->size();
   for(int ieta = 0; ieta<(neta-1); ieta++) {
     rhoObj_.etaMin.push_back(etaRanges->at(ieta));

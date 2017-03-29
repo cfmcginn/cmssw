@@ -15,5 +15,7 @@ hiFJRhoAnalyzer = cms.EDAnalyzer('HiFJRhoAnalyzer',
                                  ptJets            = cms.InputTag('hiFJRhoProducer','ptJets'),
                                  etaJets            = cms.InputTag('hiFJRhoProducer','etaJets'),
                                  areaJets            = cms.InputTag('hiFJRhoProducer','areaJets'),
+
+
 )
 

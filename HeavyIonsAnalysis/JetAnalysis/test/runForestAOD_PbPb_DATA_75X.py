@@ -26,14 +26,14 @@ process.HiForest.HiForestVersion = cms.string(version)
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
                                 #"/store/group/phys_heavyions/velicanu/reco/HIPhysicsMinBiasUPC/v0/000/262/548/recoExpress_84.root"
-                            'file:samples/PbPb_DATA_AOD.root'
+                            'file:/afs/cern.ch/work/c/cmcginn/private/SamplesForTesting/PbPb_HIMinimumBias2_HIRun2015-PromptReco-v1_AOD/18E23FE3-62A7-E511-8101-02163E011E63.root'
 				)
 )
 
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10))
+    input = cms.untracked.int32(100))
 
 
 #####################################################################################
@@ -78,7 +78,8 @@ process.TFileService = cms.Service("TFileService",
 #require the pu algo to use a certain threshold of towers for bg subtraction
 #process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedDataPbPb")
 #or don't do that
-process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puUnlimitedDataPbPb")
+#process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puUnlimitedDataPbPb")
+process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_ntuplizerPbPb")
 
 #####################################################################################
 
@@ -153,12 +154,12 @@ process.ana_step = cms.Path(process.hltanalysis *
                             process.centralityBin *
                             process.hiEvtAnalyzer*
                             process.jetSequences +
-                            process.ggHiNtuplizer +
-                            process.ggHiNtuplizerGED +
+#                            process.ggHiNtuplizer +
+#                            process.ggHiNtuplizerGED +
                             process.pfcandAnalyzer +
-                            process.pfcandAnalyzerCS +
+#                            process.pfcandAnalyzerCS +
                             process.HiForest +
-                            process.trackSequencesPbPb +
+#                            process.trackSequencesPbPb +
                             process.hcalNoise #+
                             #process.tupelPatSequence
                             )

@@ -26,13 +26,13 @@ process.HiForest.HiForestVersion = cms.string(version)
 process.source = cms.Source("PoolSource",
                             duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
                             fileNames = cms.untracked.vstring(
-                                "file:samples/PbPb_MC_RECODEBUG.root"
+                                "file:/afs/cern.ch/work/c/cmcginn/private/SamplesForTesting/Pythia6_Dijet30_pp502_Hydjet_Cymbal_MB_HINPbPbWinter16DR-75X_mcRun2_HeavyIon_v14-v1_AODSIM/04A2D492-4EED-E611-8FDB-001E67F120A8.root"
                                 )
                             )
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(20)
 )
 
 
@@ -91,7 +91,8 @@ process.load('HeavyIonsAnalysis.JetAnalysis.hiSignalGenFilters')
 
 
 #PU minimal tower cut reco sequence
-process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedPbPb')
+#process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedPbPb')
+process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_ntuplizerPbPb')
 # nominal jet reco sequence
 #process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_nominalPbPb')
 # replace above with this one for JEC:
@@ -188,17 +189,17 @@ process.ana_step = cms.Path(
                             process.hltanalysis *
                             process.centralityBin *
                             process.hiEvtAnalyzer*
-                            process.HiGenParticleAna*
+#                            process.HiGenParticleAna*
                             process.akHiGenJets +
                             process.hiSignalGenFilters + 
                             process.jetSequences +
                             process.hiFJRhoAnalyzer +
-                            process.ggHiNtuplizer +
-                            process.ggHiNtuplizerGED +
+#                            process.ggHiNtuplizer +
+#                            process.ggHiNtuplizerGED +
                             process.pfcandAnalyzer +
-                            process.pfcandAnalyzerCS +
-                            process.HiForest +
-                            process.trackSequencesPbPb #+
+#                            process.pfcandAnalyzerCS +
+                            process.HiForest #+
+#                            process.trackSequencesPbPb #+
                             #process.tupelPatSequence
                             )
 
