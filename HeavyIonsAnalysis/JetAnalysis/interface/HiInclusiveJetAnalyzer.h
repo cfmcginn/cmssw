@@ -4,6 +4,7 @@
 // system include files
 #include <memory>
 #include <string>
+#include <vector>
 #include <iostream>
 
 // user include files
@@ -18,7 +19,10 @@
 #include "TTree.h"
 #include "TLorentzVector.h"
 #include "TH1.h"
+#include "TNamed.h"
+
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/Utils/interface/TFileDirectory.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
@@ -103,6 +107,10 @@ private:
     int _index;
   };
 
+  //For subdirectory 'config', will store parameterset info direct in Forest file for ease of use offline
+  std::vector<std::string> paramNames;
+  std::vector<std::string> paramVals;
+  std::vector<TNamed*> configTNameds;
   
   // edm::InputTag   jetTag_, vtxTag_, genjetTag_, eventInfoTag_, L1gtReadout_, pfCandidateLabel_, trackTag_, matchTag_;
   edm::InputTag   jetTagLabel_;
@@ -178,6 +186,8 @@ private:
 
   TTree *t;
   edm::Service<TFileService> fs1;
+  //Subdirectory for storing parameterset info
+  TFileDirectory configDir;
 
   const CaloGeometry *geo;
 

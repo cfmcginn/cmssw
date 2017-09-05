@@ -70,6 +70,41 @@ using namespace reco;
 HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig) :
   geo(0)
 {
+  paramNames = iConfig.getParameterNames(); //Grabs set of param names from iConfig
+
+  //iterate over param names (remove unnecessary items like module names, etc)
+  unsigned int pos = 0; 
+  while(pos < paramNames.size()){
+    if(paramNames.at(pos).substr(0,1).find("@") != std::string::npos) paramNames.erase(paramNames.begin()+pos);
+    else{ 
+      std::string parVal = iConfig.getParameterAsString(paramNames.at(pos));
+      //Strings and vectors of strings return nonsense when using getParameterAsString, so must be handled separately
+      if(parVal.substr(1,1).find("S") != std::string::npos){
+	if(iConfig.existsAs<std::string>(paramNames.at(pos), true)) parVal = iConfig.getParameter<std::string>(paramNames.at(pos).c_str());
+	else parVal = iConfig.getUntrackedParameter<std::string>(paramNames.at(pos).c_str());
+      }
+      else if(parVal.substr(1,1).find("s") != std::string::npos){
+	parVal = "";
+	std::vector<std::string> parsToVal;
+	if(iConfig.existsAs<std::string>(paramNames.at(pos), true)) parsToVal = iConfig.getParameter<std::vector<std::string> >(paramNames.at(pos).c_str());
+	else parsToVal = iConfig.getUntrackedParameter<std::vector<std::string> >(paramNames.at(pos).c_str());	 
+
+	for(unsigned int i = 0; i < parsToVal.size(); ++i){
+	  parVal = parVal + parsToVal.at(i) + ",";
+	}
+	parVal = parVal.substr(0,parVal.size()-1);
+      }
+      else{
+	//getParameterAsString returns some unnecessary datatype info, remove
+	parVal.replace(0, 3, "");
+	parVal.replace(parVal.size()-1, 1, "");
+      }
+      
+      //push_back for writing later
+      paramVals.push_back(parVal);
+      ++pos;
+    }
+  }
 
   doMatch_ = iConfig.getUntrackedParameter<bool>("matchJets",false);
   jetTagLabel_ = iConfig.getParameter<InputTag>("jetTag");
@@ -220,11 +255,20 @@ HiInclusiveJetAnalyzer::beginRun(const edm::Run& run,
 				 const edm::EventSetup & es) {}
 
 void
-HiInclusiveJetAnalyzer::beginJob() {
+HiInclusiveJetAnalyzer::beginJob(){
 
   //string jetTagName = jetTag_.label()+"_tree";
   string jetTagTitle = jetTagLabel_.label()+" Jet Analysis Tree";
   t = fs1->make<TTree>("t",jetTagTitle.c_str());
+  //make subdir for parameterset info
+  configDir = fs1->mkdir("config");
+
+  //write parameter set to tnamed, note the last bit refers to fact that untracked parameters are not available in parameterset
+  //consider removing untracked parameters wherever possible
+  for(unsigned int i = 0; i < paramNames.size(); ++i){
+    configTNameds.push_back(configDir.make<TNamed>(paramNames.at(i).c_str(), paramVals.at(i).c_str()));
+  }
+  configTNameds.push_back(configDir.make<TNamed>("NOTE:", "UNLISTED UNTRACKED PARAMETERS SHOULD BE ASSUMED THE DEFAULT OF THE CORRESPONDING GIT HASH - BUT THERE IS NO GUARENTEE"));
 
   //  TTree* t= new TTree("t","Jet Response Analyzer");
   //t->Branch("run",&jets_.run,"run/I");
