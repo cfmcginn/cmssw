@@ -86,7 +86,7 @@ HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig)
       else if(parVal.substr(1,1).find("s") != std::string::npos){
 	parVal = "";
 	std::vector<std::string> parsToVal;
-	if(iConfig.existsAs<std::string>(paramNames.at(pos), true)) parsToVal = iConfig.getParameter<std::vector<std::string> >(paramNames.at(pos).c_str());
+	if(iConfig.existsAs<std::vector<std::string> >(paramNames.at(pos), true)) parsToVal = iConfig.getParameter<std::vector<std::string> >(paramNames.at(pos).c_str());
 	else parsToVal = iConfig.getUntrackedParameter<std::vector<std::string> >(paramNames.at(pos).c_str());	 
 
 	for(unsigned int i = 0; i < parsToVal.size(); ++i){
