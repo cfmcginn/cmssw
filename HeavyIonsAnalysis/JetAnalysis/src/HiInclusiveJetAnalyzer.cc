@@ -70,29 +70,30 @@ using namespace reco;
 HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig) :
   geo(0)
 {
+  //No untracked variables. Defaults in python/inclusiveJetAnalyzer_cff.py or python/jets/templateSequence_bTag_cff.py.txt
 
-  doMatch_ = iConfig.getUntrackedParameter<bool>("matchJets",false);
+  doMatch_ = iConfig.getParameter<bool>("matchJets");
   jetTagLabel_ = iConfig.getParameter<InputTag>("jetTag");
   jetTag_ = consumes<reco::JetView> (jetTagLabel_);
   jetTagPat_ = consumes<pat::JetCollection> (jetTagLabel_);
-  matchTag_ = consumes<reco::JetView> (iConfig.getUntrackedParameter<InputTag>("matchTag"));
-  matchTagPat_ = consumes<pat::JetCollection> (iConfig.getUntrackedParameter<InputTag>("matchTag"));
+  matchTag_ = consumes<reco::JetView> (iConfig.getParameter<InputTag>("matchTag"));
+  matchTagPat_ = consumes<pat::JetCollection> (iConfig.getParameter<InputTag>("matchTag"));
   
   // vtxTag_ = iConfig.getUntrackedParameter<edm::InputTag>("vtxTag",edm::InputTag("hiSelectedVertex"));
-  vtxTag_ = consumes<vector<reco::Vertex> >        (iConfig.getUntrackedParameter<edm::InputTag>("vtxTag",edm::InputTag("hiSelectedVertex")));  
+  vtxTag_ = consumes<vector<reco::Vertex> >        (iConfig.getParameter<edm::InputTag>("vtxTag"));  
   // iConfig.getUntrackedParameter<edm::InputTag>("vtxTag",edm::InputTag("hiSelectedVertex"));
   trackTag_ = consumes<reco::TrackCollection> (iConfig.getParameter<InputTag>("trackTag"));
-  useQuality_ = iConfig.getUntrackedParameter<bool>("useQuality",1);
-  trackQuality_ = iConfig.getUntrackedParameter<string>("trackQuality","highPurity");
+  useQuality_ = iConfig.getParameter<bool>("useQuality");
+  trackQuality_ = iConfig.getParameter<string>("trackQuality");
 
-  jetName_ = iConfig.getUntrackedParameter<string>("jetName");
-  doGenTaus_ = iConfig.getUntrackedParameter<bool>("doGenTaus",0);
-  doGenSym_ = iConfig.getUntrackedParameter<bool>("doGenSym",0);
-  doSubJets_ = iConfig.getUntrackedParameter<bool>("doSubJets",0);
-  doJetConstituents_ = iConfig.getUntrackedParameter<bool>("doJetConstituents", false);
-  doNewJetVars_ = iConfig.getUntrackedParameter<bool>("doNewJetVars", false);
-  doGenSubJets_ = iConfig.getUntrackedParameter<bool>("doGenSubJets", false);
-  subjetGenTag_ = consumes<reco::JetView> (iConfig.getUntrackedParameter<InputTag>("subjetGenTag"));
+  jetName_ = iConfig.getParameter<string>("jetName");
+  doGenTaus_ = iConfig.getParameter<bool>("doGenTaus");
+  doGenSym_ = iConfig.getParameter<bool>("doGenSym");
+  doSubJets_ = iConfig.getParameter<bool>("doSubJets");
+  doJetConstituents_ = iConfig.getParameter<bool>("doJetConstituents");
+  doNewJetVars_ = iConfig.getParameter<bool>("doNewJetVars");
+  doGenSubJets_ = iConfig.getParameter<bool>("doGenSubJets");
+  subjetGenTag_ = consumes<reco::JetView> (iConfig.getParameter<InputTag>("subjetGenTag"));
 
   if (iConfig.exists("genTau1"))
     tokenGenTau1_          = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("genTau1"));
@@ -106,19 +107,19 @@ HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig)
   if (iConfig.exists("genDroppedBranches"))
     tokenGenDroppedBranches_          = consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("genDroppedBranches"));
 
-  isMC_ = iConfig.getUntrackedParameter<bool>("isMC",false);
-  useHepMC_ = iConfig.getUntrackedParameter<bool> ("useHepMC",false);
-  fillGenJets_ = iConfig.getUntrackedParameter<bool>("fillGenJets",false);
+  isMC_ = iConfig.getParameter<bool>("isMC");
+  useHepMC_ = iConfig.getParameter<bool> ("useHepMC");
+  fillGenJets_ = iConfig.getParameter<bool>("fillGenJets");
 
-  doTrigger_ = iConfig.getUntrackedParameter<bool>("doTrigger",false);
-  doHiJetID_ = iConfig.getUntrackedParameter<bool>("doHiJetID",false);
-  if(doHiJetID_) jetIDweightFile_ = iConfig.getUntrackedParameter<string>("jetIDWeight","weights.xml");
-  doStandardJetID_ = iConfig.getUntrackedParameter<bool>("doStandardJetID",false);
+  doTrigger_ = iConfig.getParameter<bool>("doTrigger");
+  doHiJetID_ = iConfig.getParameter<bool>("doHiJetID");
+  if(doHiJetID_) jetIDweightFile_ = iConfig.getParameter<string>("jetIDWeight");
+  doStandardJetID_ = iConfig.getParameter<bool>("doStandardJetID");
 
   rParam = iConfig.getParameter<double>("rParam");
-  hardPtMin_ = iConfig.getUntrackedParameter<double>("hardPtMin",4);
+  hardPtMin_ = iConfig.getParameter<double>("hardPtMin");
   jetPtMin_ = iConfig.getParameter<double>("jetPtMin");
-  jetAbsEtaMax_ = iConfig.getUntrackedParameter<double>("jetAbsEtaMax", 5.1);
+  jetAbsEtaMax_ = iConfig.getParameter<double>("jetAbsEtaMax");
 
   if(isMC_){
     //genjetTag_ = consumes<vector<reco::GenJet> > (iConfig.getParameter<InputTag>("genjetTag"));
@@ -126,71 +127,71 @@ HiInclusiveJetAnalyzer::HiInclusiveJetAnalyzer(const edm::ParameterSet& iConfig)
     if(useHepMC_) eventInfoTag_ = consumes<HepMCProduct> (iConfig.getParameter<InputTag>("eventInfoTag"));
     eventGenInfoTag_ = consumes<GenEventInfoProduct> (iConfig.getParameter<InputTag>("eventInfoTag"));
   }
-  verbose_ = iConfig.getUntrackedParameter<bool>("verbose",false);
+  verbose_ = iConfig.getParameter<bool>("verbose");
 
-  useVtx_ = iConfig.getUntrackedParameter<bool>("useVtx",false);
-  useJEC_ = iConfig.getUntrackedParameter<bool>("useJEC",true);
-  usePat_ = iConfig.getUntrackedParameter<bool>("usePAT",true);
+  useVtx_ = iConfig.getParameter<bool>("useVtx");
+  useJEC_ = iConfig.getParameter<bool>("useJEC");
+  usePat_ = iConfig.getParameter<bool>("usePAT");
 
-  doLifeTimeTagging_ = iConfig.getUntrackedParameter<bool>("doLifeTimeTagging",false);
-  doLifeTimeTaggingExtras_ = iConfig.getUntrackedParameter<bool>("doLifeTimeTaggingExtras",true);
-  saveBfragments_  = iConfig.getUntrackedParameter<bool>("saveBfragments",false);
-  skipCorrections_  = iConfig.getUntrackedParameter<bool>("skipCorrections",false);
+  doLifeTimeTagging_ = iConfig.getParameter<bool>("doLifeTimeTagging");
+  doLifeTimeTaggingExtras_ = iConfig.getParameter<bool>("doLifeTimeTaggingExtras");
+  saveBfragments_  = iConfig.getParameter<bool>("saveBfragments");
+  skipCorrections_  = iConfig.getParameter<bool>("skipCorrections");
 
-  pfCandidateLabel_ = consumes<reco::PFCandidateCollection> (iConfig.getUntrackedParameter<edm::InputTag>("pfCandidateLabel",edm::InputTag("particleFlowTmp")));
+  pfCandidateLabel_ = consumes<reco::PFCandidateCollection> (iConfig.getParameter<edm::InputTag>("pfCandidateLabel"));
 
-  doTower = iConfig.getUntrackedParameter<bool>("doTower",false);
+  doTower = iConfig.getParameter<bool>("doTower");
   if(doTower){
-    TowerSrc_ = consumes<CaloTowerCollection>( iConfig.getUntrackedParameter<edm::InputTag>("towersSrc",edm::InputTag("towerMaker")));
+    TowerSrc_ = consumes<CaloTowerCollection>( iConfig.getParameter<edm::InputTag>("towersSrc"));
   }
   
-  doExtraCTagging_ = iConfig.getUntrackedParameter<bool>("doExtraCTagging",false);
+  doExtraCTagging_ = iConfig.getParameter<bool>("doExtraCTagging");
 
-  genParticleSrc_ = consumes<reco::GenParticleCollection> (iConfig.getUntrackedParameter<edm::InputTag>("genParticles",edm::InputTag("hiGenParticles")));
+  genParticleSrc_ = consumes<reco::GenParticleCollection> (iConfig.getParameter<edm::InputTag>("genParticles"));
 
   if(doTrigger_){
     L1gtReadout_ = consumes< L1GlobalTriggerReadoutRecord > (iConfig.getParameter<edm::InputTag>("L1gtReadout"));
-    hltResName_ = consumes< TriggerResults >(iConfig.getUntrackedParameter<string>("hltTrgResults","TriggerResults::HLT"));
+    hltResName_ = consumes< TriggerResults >(iConfig.getParameter<string>("hltTrgResults"));
 
 
     if (iConfig.exists("hltTrgNames"))
-      hltTrgNames_ = iConfig.getUntrackedParameter<vector<string> >("hltTrgNames");
+      hltTrgNames_ = iConfig.getParameter<vector<string> >("hltTrgNames");
 
     if (iConfig.exists("hltProcNames"))
-      hltProcNames_ = iConfig.getUntrackedParameter<vector<string> >("hltProcNames");
+      hltProcNames_ = iConfig.getParameter<vector<string> >("hltProcNames");
     else {
       hltProcNames_.push_back("FU");
       hltProcNames_.push_back("HLT");
     }
   }
   if(doLifeTimeTagging_){
-    bTagJetName_ = iConfig.getUntrackedParameter<string>("bTagJetName");
-    ImpactParameterTagInfos_ = consumes<vector<TrackIPTagInfo> > (iConfig.getUntrackedParameter<string>("ImpactParameterTagInfos",(bTagJetName_+"ImpactParameterTagInfos")));
-    TrackCountingHighEffBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("TrackCountingHighEffBJetTags",(bTagJetName_+"TrackCountingHighEffBJetTags")));
-    TrackCountingHighPurBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("TrackCountingHighPurBJetTags",(bTagJetName_+"TrackCountingHighPurBJetTags")));
-    JetProbabilityBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("JetProbabilityBJetTags",(bTagJetName_+"JetProbabilityBJetTags")));
-    JetBProbabilityBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("JetBProbabilityBJetTags",(bTagJetName_+"JetBProbabilityBJetTags")));
-    SecondaryVertexTagInfos_ = consumes<vector<SecondaryVertexTagInfo> > (iConfig.getUntrackedParameter<string>("SecondaryVertexTagInfos",(bTagJetName_+"SecondaryVertexTagInfos")));
-    SecondaryVertexNegativeTagInfos_ = consumes<vector<SecondaryVertexTagInfo> > (iConfig.getUntrackedParameter<string>("SecondaryVertexNegativeTagInfos",(bTagJetName_+"SecondaryVertexNegativeTagInfos")));
-    SimpleSecondaryVertexHighEffBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("SimpleSecondaryVertexHighEffBJetTags",(bTagJetName_+"SimpleSecondaryVertexHighEffBJetTags")));
-    NegativeSimpleSecondaryVertexHighEffBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("NegativeSimpleSecondaryVertexHighEffBJetTags",(bTagJetName_+"NegativeSimpleSecondaryVertexHighEffBJetTags")));
-    SimpleSecondaryVertexHighPurBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("SimpleSecondaryVertexHighPurBJetTags",(bTagJetName_+"SimpleSecondaryVertexHighPurBJetTags")));
-    NegativeSimpleSecondaryVertexHighPurBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("NegativeSimpleSecondaryVertexHighPurBJetTags",(bTagJetName_+"NegativeSimpleSecondaryVertexHighPurBJetTags")));
-    CombinedSecondaryVertexBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("CombinedSecondaryVertexBJetTags",(bTagJetName_+"CombinedSecondaryVertexBJetTags")));
-    NegativeCombinedSecondaryVertexBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("NegativeCombinedSecondaryVertexBJetTags",(bTagJetName_+"NegativeCombinedSecondaryVertexBJetTags")));
-    PositiveCombinedSecondaryVertexBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("PositiveCombinedSecondaryVertexBJetTags",(bTagJetName_+"PositiveCombinedSecondaryVertexBJetTags")));
-    CombinedSecondaryVertexV2BJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("CombinedSecondaryVertexV2BJetTags",(bTagJetName_+"CombinedSecondaryVertexV2BJetTags")));
-    NegativeCombinedSecondaryVertexV2BJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("NegativeCombinedSecondaryVertexV2BJetTags",(bTagJetName_+"NegativeCombinedSecondaryVertexV2BJetTags")));
-    PositiveCombinedSecondaryVertexV2BJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("PositiveCombinedSecondaryVertexV2BJetTags",(bTagJetName_+"PositiveCombinedSecondaryVertexV2BJetTags")));
-    NegativeSoftPFMuonByPtBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("NegativeSoftPFMuonByPtBJetTags",(bTagJetName_+"NegativeSoftPFMuonByPtBJetTags")));
-    PositiveSoftPFMuonByPtBJetTags_ = consumes<JetTagCollection> (iConfig.getUntrackedParameter<string>("PositiveSoftPFMuonByPtBJetTags",(bTagJetName_+"PositiveSoftPFMuonByPtBJetTags")));
+    bTagJetName_ = iConfig.getParameter<string>("bTagJetName");
+    ImpactParameterTagInfos_ = consumes<vector<TrackIPTagInfo> > (iConfig.getParameter<string>("ImpactParameterTagInfos"));
+    TrackCountingHighEffBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("TrackCountingHighEffBJetTags"));
+    TrackCountingHighPurBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("TrackCountingHighPurBJetTags"));
+    JetProbabilityBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("JetProbabilityBJetTags"));
+    JetBProbabilityBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("JetBProbabilityBJetTags"));
+    SecondaryVertexTagInfos_ = consumes<vector<SecondaryVertexTagInfo> > (iConfig.getParameter<string>("SecondaryVertexTagInfos"));
+    SecondaryVertexNegativeTagInfos_ = consumes<vector<SecondaryVertexTagInfo> > (iConfig.getParameter<string>("SecondaryVertexNegativeTagInfos"));
+    SimpleSecondaryVertexHighEffBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("SimpleSecondaryVertexHighEffBJetTags"));
+    NegativeSimpleSecondaryVertexHighEffBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("NegativeSimpleSecondaryVertexHighEffBJetTags"));
+    SimpleSecondaryVertexHighPurBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("SimpleSecondaryVertexHighPurBJetTags"));
+    NegativeSimpleSecondaryVertexHighPurBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("NegativeSimpleSecondaryVertexHighPurBJetTags"));
+    CombinedSecondaryVertexBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("CombinedSecondaryVertexBJetTags"));
+    NegativeCombinedSecondaryVertexBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("NegativeCombinedSecondaryVertexBJetTags"));
+    PositiveCombinedSecondaryVertexBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("PositiveCombinedSecondaryVertexBJetTags"));
+    CombinedSecondaryVertexV2BJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("CombinedSecondaryVertexV2BJetTags"));
+    NegativeCombinedSecondaryVertexV2BJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("NegativeCombinedSecondaryVertexV2BJetTags"));
+    PositiveCombinedSecondaryVertexV2BJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("PositiveCombinedSecondaryVertexV2BJetTags"));
+    NegativeSoftPFMuonByPtBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("NegativeSoftPFMuonByPtBJetTags"));
+    PositiveSoftPFMuonByPtBJetTags_ = consumes<JetTagCollection> (iConfig.getParameter<string>("PositiveSoftPFMuonByPtBJetTags"));
   }
 
   doSubEvent_ = 0;
 
   if(isMC_){
-    genPtMin_ = iConfig.getUntrackedParameter<double>("genPtMin",10);
-    doSubEvent_ = iConfig.getUntrackedParameter<bool>("doSubEvent",0);
+    genPtMin_ = iConfig.getParameter<double>("genPtMin");
+    doSubEvent_ = iConfig.getParameter<bool>("doSubEvent");
   }
 
   fastjet::contrib::OnePass_KT_Axes     onepass_kt_axes;
