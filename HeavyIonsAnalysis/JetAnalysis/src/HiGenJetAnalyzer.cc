@@ -17,14 +17,11 @@
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
 
 HiGenJetAnalyzer::HiGenJetAnalyzer(const edm::ParameterSet& iConfig)
 {
-  vtxTag_ = consumes<std::vector<reco::Vertex> >(iConfig.getParameter<edm::InputTag>("vtxTag"));  
   jetName_ = iConfig.getParameter<std::string>("jetName");
   genjetTag_ = consumes<edm::View<reco::GenJet>>(iConfig.getParameter<edm::InputTag>("genjetTag"));
-  useVtx_ = iConfig.getParameter<bool>("useVtx");
 
   eventGenInfoTag_ = consumes<GenEventInfoProduct> (iConfig.getParameter<edm::InputTag>("eventInfoTag"));
   genPtMin_ = iConfig.getParameter<double>("genPtMin");
@@ -43,14 +40,7 @@ void HiGenJetAnalyzer::beginJob()
   t->Branch("run",&genjets_.run,"run/I");
   t->Branch("evt",&genjets_.evt,"evt/I");
   t->Branch("lumi",&genjets_.lumi,"lumi/I");
-  t->Branch("b",&genjets_.b,"b/F");
-  if(useVtx_){
-    t->Branch("vx", &genjets_.vx,"vx/F");
-    t->Branch("vy",&genjets_.vy,"vy/F");
-    t->Branch("vz",&genjets_.vz,"vz/F");
-  }
-  t->Branch("beamId1",&genjets_.beamId1,"beamId1/I");
-  t->Branch("beamId2",&genjets_.beamId2,"beamId2/I");
+
   t->Branch("pthat",&genjets_.pthat,"pthat/F");
 
   t->Branch("ngen",&genjets_.ngen,"ngen/I");
@@ -71,28 +61,6 @@ void HiGenJetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   genjets_.evt = iEvent.id().event();
   genjets_.lumi = iEvent.id().luminosityBlock();
 
-  int bin = -1;
-  double hf = 0.;
-  double b = 999.;
-
-  // loop the events
-  genjets_.bin = bin;
-  genjets_.hf = hf;
-
-  reco::Vertex::Point vtx(0,0,0);
-  if (useVtx_) {
-    edm::Handle<std::vector<reco::Vertex> >vertex;
-    iEvent.getByToken(vtxTag_, vertex);
-
-    if(vertex->size()>0) {
-      genjets_.vx=vertex->begin()->x();
-      genjets_.vy=vertex->begin()->y();
-      genjets_.vz=vertex->begin()->z();
-      vtx = vertex->begin()->position();
-    }
-  }
-
-  genjets_.b = b;
   edm::Handle<GenEventInfoProduct> hEventInfo;
   iEvent.getByToken(eventGenInfoTag_,hEventInfo);
   // binning values and qscale appear to be equivalent, but binning values not always present

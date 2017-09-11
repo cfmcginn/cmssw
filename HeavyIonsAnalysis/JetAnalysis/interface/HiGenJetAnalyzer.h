@@ -25,6 +25,7 @@
 /**\class HiGenJetAnalyzer
    \author Chris McGinn
    \date   06 September 2017
+   \Based on HiInclusiveJetAnalyzer in same dir (rework for more modular use)
 */
 
 class HiGenJetAnalyzer : public edm::EDAnalyzer{
@@ -37,13 +38,11 @@ class HiGenJetAnalyzer : public edm::EDAnalyzer{
   virtual void beginJob();
 
 private: 
-  edm::EDGetTokenT<std::vector<reco::Vertex> >       vtxTag_;
   edm::EDGetTokenT<edm::View<reco::GenJet>>          genjetTag_;
   edm::EDGetTokenT<GenEventInfoProduct>              eventGenInfoTag_;
   
   std::string jetName_;//used as prefix for jet structures
 
-  bool useVtx_;
   double genPtMin_;
   double genAbsEtaMax_;
 
@@ -54,13 +53,7 @@ private:
 
   struct GJRA{
     int run,evt,lumi;
-    int bin;
-    float vx, vy, vz;
-    float b;
-    float hf;
     float pthat;
-
-    int beamId1, beamId2;
 
     int ngen;
     float genpt[MAXJETS];
