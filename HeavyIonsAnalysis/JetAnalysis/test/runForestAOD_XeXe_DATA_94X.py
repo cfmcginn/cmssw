@@ -301,6 +301,15 @@ process.pVertexFilterCutGplus = cms.Path(process.pileupVertexFilterCutGplus)
 process.pVertexFilterCutE = cms.Path(process.pileupVertexFilterCutE)
 process.pVertexFilterCutEandG = cms.Path(process.pileupVertexFilterCutEandG)
 
+process.load('HeavyIonsAnalysis.Configuration.hfCoincFilter_cff')
+process.phfCoincFilter1 = cms.Path(process.hfCoincFilter)
+process.phfCoincFilter2 = cms.Path(process.hfCoincFilter2)
+process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3)
+process.phfCoincFilter4 = cms.Path(process.hfCoincFilter4)
+process.phfCoincFilter5 = cms.Path(process.hfCoincFilter5)
+
+process.pclusterCompatibilityFilter = cms.Path(process.clusterCompatibilityFilter)
+
 process.pAna = cms.EndPath(process.skimanalysis)
 
 # Customization
