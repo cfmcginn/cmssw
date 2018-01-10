@@ -46,7 +46,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 process.load('FWCore.MessageService.MessageLogger_cfi')
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '92X_dataRun2_Prompt_Candidate_forXeXe_v1', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '94X_dataRun2_ReReco_EOY17_v2', '')
 process.HiForest.GlobalTagLabel = process.GlobalTag.globaltag
 
 process.GlobalTag.snapshotTime = cms.string("9999-12-31 23:59:59.000")
@@ -246,7 +246,7 @@ process.pfTowers.JetSrc = cms.untracked.InputTag("ak4CaloJets")
 
 
 process.ana_step = cms.Path(
-			    process.hltanalysisReco *
+			    #process.hltanalysisReco *
     			    #process.hltobject *
                             process.hiCentrality * 
                             process.centralityBin *
