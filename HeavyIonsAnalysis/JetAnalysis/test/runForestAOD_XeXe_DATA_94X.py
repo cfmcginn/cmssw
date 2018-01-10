@@ -246,17 +246,17 @@ process.pfTowers.JetSrc = cms.untracked.InputTag("ak4CaloJets")
 
 
 process.ana_step = cms.Path(
-			    #process.hltanalysisReco *
+			    process.hltanalysisReco *
     			    #process.hltobject *
                             process.hiCentrality * 
                             process.centralityBin *
                             process.hiEvtAnalyzer *
-                            #process.jetSequences +
+                            process.jetSequences +
     #                        process.egmGsfElectronIDSequence + #Should be added in the path for VID module
                             process.ggHiNtuplizer +
                             process.ggHiNtuplizerGED +
                             process.pfcandAnalyzer +
-			    #process.pfcandAnalyzerCS +
+			    process.pfcandAnalyzerCS +
 			    process.rechitanalyzer +
                             process.HiForest +
                             process.trackSequencesPP
