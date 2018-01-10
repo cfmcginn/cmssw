@@ -246,7 +246,7 @@ process.pfTowers.JetSrc = cms.untracked.InputTag("ak4CaloJets")
 
 
 process.ana_step = cms.Path(
-			    #process.hltanalysisReco *
+			    process.hltanalysisReco *
     			    #process.hltobject *
                             process.hiCentrality * 
                             process.centralityBin *
