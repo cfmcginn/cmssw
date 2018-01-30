@@ -58,7 +58,7 @@ process.GlobalTag.toGet.extend([
       #tag = cms.string("CentralityTable_HFtowers200_XeXe5p44TeVEPOSLHC_v941x01_mc"),#EPOS
       connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
       label = cms.untracked.string("HFtowersHYDJET")
-      #label = cms.untracked.string("HFtowersEPOS")
+      #label = cms.untracked.string("HFtowersEPOSLHC")
    ),
 ])
 process.load('RecoHI.HiCentralityAlgos.HiCentrality_cfi')
@@ -159,7 +159,7 @@ process.load('HeavyIonsAnalysis.JetAnalysis.ExtraTrackReco_cff')
 process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_cff')
 
 # Use this instead for track corrections
-## process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_Corr_cff')
+##process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_Corr_cff')
 
 #####################################################################################
 
