@@ -124,6 +124,10 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::create(const std::vector<l1t::
 	int ieta = theRings.at(ringGroupIt-1).at(ringIt);
        
 	if(ieta == 28 || ieta == -28) continue;
+	if(ieta == 27 || ieta == -27) continue;
+	if(ieta == 26 || ieta == -26) continue;
+	if(ieta == 25 || ieta == -25) continue;
+
 	if(PUSubMethod == "PhiRingHITower" || PUSubMethod == "PhiRingHIRegion" || PUSubMethod == "PhiRingPPTowerMask"){
 	  if(ieta == 27 || ieta == -27) continue;
 	  else if(ieta == 26 || ieta == -26) continue;
@@ -162,6 +166,10 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::create(const std::vector<l1t::
 	      int iphiTest = iphi+dphi;
 
 	      if(ietaTest == 28 || ietaTest == -28) continue;
+	      if(ietaTest == 27 || ietaTest == -27) continue;
+	      if(ietaTest == 26 || ietaTest == -26) continue;
+	      if(ietaTest == 25 || ietaTest == -25) continue;
+
 	      if(PUSubMethod == "PhiRingHITower" || PUSubMethod == "PhiRingHIRegion" || PUSubMethod == "PhiRingPPTowerMask"){
 		if(ietaTest == 27 || ietaTest == -27) continue;
 		else if(ietaTest == 26 || ietaTest == -26) continue;
