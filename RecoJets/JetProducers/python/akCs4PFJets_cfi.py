@@ -13,6 +13,7 @@ akCs4PFJets = cms.EDProducer(
     rho       = cms.InputTag('hiFJRhoProducer','mapToRho'),
     rhom      = cms.InputTag('hiFJRhoProducer','mapToRhoM'),
     csAlpha   = cms.double(1.),
+    csRParam  = cms.double(-1.),
     writeJetsWithConst = cms.bool(True),
     jetCollInstanceName = cms.string("pfParticlesCs")
 )

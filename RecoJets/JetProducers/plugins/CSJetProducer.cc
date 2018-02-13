@@ -19,6 +19,7 @@ CSJetProducer::CSJetProducer(edm::ParameterSet const& conf):
   rhoToken_ = consumes<std::vector<double>>(conf.getParameter<edm::InputTag>( "rho" ));
   rhomToken_ = consumes<std::vector<double>>(conf.getParameter<edm::InputTag>( "rhom" ));
   csAlpha_ = conf.getParameter<double>("csAlpha");
+  csRParam_ = conf.getParameter<double>("csRParam");
 }
 
 void CSJetProducer::produce( edm::Event & iEvent, const edm::EventSetup & iSetup )
