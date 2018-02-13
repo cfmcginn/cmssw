@@ -18,6 +18,7 @@ CSJetProducer::CSJetProducer(edm::ParameterSet const& conf):
   etaToken_ = consumes<std::vector<double>>(conf.getParameter<edm::InputTag>( "etaMap" ));
   rhoToken_ = consumes<std::vector<double>>(conf.getParameter<edm::InputTag>( "rho" ));
   rhomToken_ = consumes<std::vector<double>>(conf.getParameter<edm::InputTag>( "rhom" ));
+  csRParam_ = conf.getParameter<double>("csRParam");
   csAlpha_ = conf.getParameter<double>("csAlpha");
 }
 

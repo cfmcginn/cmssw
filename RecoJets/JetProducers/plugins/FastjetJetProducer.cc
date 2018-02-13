@@ -224,6 +224,7 @@ FastjetJetProducer::FastjetJetProducer(const edm::ParameterSet& iConfig)
       rhoToken_ = consumes<std::vector<double>>(iConfig.getParameter<edm::InputTag>( "rho" ));
       rhomToken_ = consumes<std::vector<double>>(iConfig.getParameter<edm::InputTag>( "rhom" ));
       csAlpha_ = iConfig.getParameter<double>("csAlpha");
+      csRParam_ = iConfig.getParameter<double>("csRParam");
     }
     
     if ( iConfig.exists("useSoftDrop") ) {
