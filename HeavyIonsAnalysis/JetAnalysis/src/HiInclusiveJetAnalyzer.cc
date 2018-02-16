@@ -2875,7 +2875,7 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsRecoJet(const reco::Jet jet){
       jcid.push_back(dp.pdgId());
       jcE.push_back(jc.e());
       jcpt.push_back(jc.pt());
-      jcphi.push_back(jc.phi());
+      jcphi.push_back(jc.phi_std());
       jceta.push_back(jc.eta());
       jcm.push_back(jc.m());
       
@@ -3364,7 +3364,7 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsRefJet(const reco::GenJet jet){
       jcid.push_back(dp.pdgId());
       jcE.push_back(jc.e());
       jcpt.push_back(jc.pt());
-      jcphi.push_back(jc.phi());
+      jcphi.push_back(jc.phi_std());
       jceta.push_back(jc.eta());
       jcm.push_back(jc.m());
 
@@ -3852,7 +3852,7 @@ void HiInclusiveJetAnalyzer::fillNewJetVarsGenJet(const reco::GenJet jet){
       jcid.push_back(dp.pdgId());
       jcE.push_back(jc.e());
       jcpt.push_back(jc.pt());
-      jcphi.push_back(jc.phi());
+      jcphi.push_back(jc.phi_std());
       jceta.push_back(jc.eta());
       jcm.push_back(jc.m());
 
