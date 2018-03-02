@@ -33,7 +33,7 @@ process.source = cms.Source("PoolSource",
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100))
+    input = cms.untracked.int32(5))
 
 
 #####################################################################################
@@ -114,10 +114,10 @@ process.TFileService = cms.Service("TFileService",
 # Jets
 #############################
 
-#process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_XeXe_mc")
-#process.akPu4PFcorr.payload = "AK4PF"
-#process.akCs4PFcorr.payload = "AK4PF"
-#process.ak4PFcorr.payload = "AK4PF"
+process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_XeXe_mc")
+process.akPu4PFcorr.payload = "AK4PF"
+process.akCs4PFcorr.payload = "AK4PF"
+process.ak4PFcorr.payload = "AK4PF"
 # Use this version for JEC
 #process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_JECPP")
 
@@ -200,17 +200,17 @@ for idmod in my_id_modules:
 # Main analysis list
 #########################
 process.ana_step = cms.Path(
-			    #process.hltanalysisReco *
+			    process.hltanalysisReco *
                             process.hiCentrality *
                             process.centralityBin *
                             process.hiEvtAnalyzer *
                             process.HiGenParticleAna*
-                            #process.jetSequences +
+                            process.jetSequences +
                             #process.egmGsfElectronIDSequence + #Should be added in the path for VID module
                             process.ggHiNtuplizer +
                             process.ggHiNtuplizerGED +
-                            #process.pfcandAnalyzer +
-                            #process.pfcandAnalyzerCS +
+                            process.pfcandAnalyzer +
+                            process.pfcandAnalyzerCS +
 			    process.HiForest +
 			    process.trackSequencesPP +
                             process.runAnalyzer
@@ -265,15 +265,15 @@ process.phfCoincFilter5 = cms.Path(process.hfCoincFilter5)
 process.pAna = cms.EndPath(process.skimanalysis)
 
 # Customization
-#process.akPu4PFJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
-#process.akPu4PFJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
-#process.akPu4PFJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
-#process.akCs4PFJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
-#process.akCs4PFJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
-#process.akCs4PFJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
-#process.ak4CaloJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
-#process.ak4CaloJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
-#process.ak4CaloJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
-#process.ak4PFJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
-#process.ak4PFJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
-#process.ak4PFJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
+process.akPu4PFJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
+process.akPu4PFJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
+process.akPu4PFJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
+process.akCs4PFJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
+process.akCs4PFJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
+process.akCs4PFJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
+process.ak4CaloJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
+process.ak4CaloJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
+process.ak4CaloJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
+process.ak4PFJetAnalyzer.doExtendedFlavorTagging = cms.untracked.bool(False)
+process.ak4PFJetAnalyzer.trackSelection = process.ak4PFSecondaryVertexTagInfos.trackSelection
+process.ak4PFJetAnalyzer.trackPairV0Filter = process.ak4PFSecondaryVertexTagInfos.vertexCuts.v0Filter
