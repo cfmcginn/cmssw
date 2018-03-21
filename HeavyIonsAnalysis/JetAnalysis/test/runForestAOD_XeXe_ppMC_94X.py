@@ -33,7 +33,7 @@ process.source = cms.Source("PoolSource",
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(5))
+    input = cms.untracked.int32(10))
 
 
 #####################################################################################
@@ -168,7 +168,8 @@ process.load('HeavyIonsAnalysis.JetAnalysis.TrkAnalyzers_cff')
 ######################
 process.load('HeavyIonsAnalysis.PhotonAnalysis.ggHiNtuplizer_cfi')
 process.ggHiNtuplizer.gsfElectronLabel   = cms.InputTag("gedGsfElectrons")
-process.ggHiNtuplizer.recoPhotonHiIsolationMap = cms.InputTag('photonIsolationHIProducerpp')
+process.ggHiNtuplizer.recoPhotonSrc = cms.InputTag("islandPhotons")
+process.ggHiNtuplizer.recoPhotonHiIsolationMap = cms.InputTag('photonIsolationHIProducerppIsland')
 process.ggHiNtuplizer.useValMapIso = cms.bool(True)
 process.ggHiNtuplizer.VtxLabel           = cms.InputTag("offlinePrimaryVertices")
 process.ggHiNtuplizer.particleFlowCollection = cms.InputTag("particleFlow")
