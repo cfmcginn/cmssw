@@ -19,6 +19,7 @@
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2EGammaAlgorithm.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2TauAlgorithm.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2JetAlgorithm.h"
+#include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2HIJetAlgorithm.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2EtSumAlgorithm.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2JetSumAlgorithm.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2DemuxEGAlgoFirmware.h"
@@ -36,9 +37,9 @@ namespace l1t {
   public:
     Stage2MainProcessorFirmwareImp1(unsigned fwv, CaloParamsHelper* params);
 
-    ~Stage2MainProcessorFirmwareImp1() override;
+    virtual ~Stage2MainProcessorFirmwareImp1();
 
-    void processEvent(const std::vector<l1t::CaloTower> & inTowers,
+    virtual void processEvent(const std::vector<l1t::CaloTower> & inTowers,
 			      std::vector<l1t::CaloTower> & outTowers,
 			      std::vector<l1t::CaloCluster> & clusters,
 			      std::vector<l1t::EGamma> & mpEGammas,
@@ -48,7 +49,7 @@ namespace l1t {
 			      std::vector<l1t::EGamma> & egammas,
 			      std::vector<l1t::Tau> & taus,
 			      std::vector<l1t::Jet> & jets,
-			      std::vector<l1t::EtSum> & etSums) override;
+			      std::vector<l1t::EtSum> & etSums);
 
     void print(std::ostream&) const;
 
@@ -64,6 +65,7 @@ namespace l1t {
     Stage2Layer2ClusterAlgorithm* m_tauClusterAlgo;
     Stage2Layer2TauAlgorithm* m_tauAlgo;
     Stage2Layer2JetAlgorithm* m_jetAlgo;
+    Stage2Layer2HIJetAlgorithm* m_hiJetAlgo;
     Stage2Layer2EtSumAlgorithm* m_sumAlgo;
     Stage2Layer2JetSumAlgorithm* m_jetSumAlgo;
 
