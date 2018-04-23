@@ -241,8 +241,8 @@ void l1t::Stage2Layer2EGammaAlgorithmFirmwareImp1::processEvent(const std::vecto
       
   }
 
-  AccumulatingSort <l1t::EGamma> etaPosSorter(6);
-  AccumulatingSort <l1t::EGamma> etaNegSorter(6);
+  AccumulatingSort <l1t::EGamma> etaPosSorter(28);
+  AccumulatingSort <l1t::EGamma> etaNegSorter(28);
   std::vector<l1t::EGamma> accumEtaPos;
   std::vector<l1t::EGamma> accumEtaNeg;
 
@@ -262,6 +262,10 @@ void l1t::Stage2Layer2EGammaAlgorithmFirmwareImp1::processEvent(const std::vecto
       etaNegSorter.Merge( egEtaNeg.at(ieta) , accumEtaNeg );
 
   }
+  std::cout << "EG CHECK: " << std::endl;
+  std::cout << " " << egEtaNeg.size() << ", " << accumEtaNeg.size() << std::endl;
+  std::cout << " " << egEtaPos.size() << ", " << accumEtaPos.size() << std::endl;
+    
 
   // put all 12 candidates in the original tau vector, removing zero energy ones
   egammas.clear();

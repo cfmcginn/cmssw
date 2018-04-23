@@ -57,9 +57,9 @@ l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::Stage2Layer2HIJetAlgorithmFirmwareI
 
 l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::~Stage2Layer2HIJetAlgorithmFirmwareImp1()
 {
-  std::cout << "MAXES: " << std::endl;
+  //  std::cout << "MAXES: " << std::endl;
   for(std::map<Int_t,Int_t>::iterator it=towMax.begin(); it!=towMax.end(); ++it){
-    std::cout << " " << it->first << ", " << it->second << std::endl;
+    //    std::cout << " " << it->first << ", " << it->second << std::endl;
   }
 }
 
@@ -198,9 +198,9 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::create(const std::vector<l1t::
 	  // check it passes the seed threshold
 	  if(iEt < floor(params_->jetSeedThreshold()/params_->towerLsbSum())) continue;
 	  
-	  std::cout << "Thresh: " << floor(params_->jetSeedThreshold()/params_->towerLsbSum()) << std::endl;
-	  std::cout << "Check Jet: " << std::endl;
-	  std::cout << iEt << ", " << ieta << ", " << iphi << std::endl;
+	  //	  std::cout << "Thresh: " << floor(params_->jetSeedThreshold()/params_->towerLsbSum()) << std::endl;
+	  //	  std::cout << "Check Jet: " << std::endl;
+	  //	  std::cout << iEt << ", " << ieta << ", " << iphi << std::endl;
 
 	  // loop over towers in this jet
 	  for( int deta = -4; deta < 5; ++deta ) {
@@ -245,13 +245,13 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::create(const std::vector<l1t::
 	      else if (mask2_[8-(dphi+4)][deta+4] == 2) vetoCandidate = (seedEt <= towEt);
 	      
 	      if (vetoCandidate){
-		std::cout << "VETOED" << std::endl;
+		//		std::cout << "VETOED" << std::endl;
 		break;
 	      }
 	      else iEt += towEt;
 
 	      
-	      std::cout << " " << towEt << ", " << ietaTest << ", " << iphiTest << " (" << iEt << ") " << etaPUEstimate[ietaTest] + towEt << std::endl;
+	      //	      std::cout << " " << towEt << ", " << ietaTest << ", " << iphiTest << " (" << iEt << ") " << etaPUEstimate[ietaTest] + towEt << std::endl;
 	      //	      if(towEt > 0) std::cout << " " << towEt << ", " << ietaTest << ", " << iphiTest << " (" << iEt << ")" << std::endl;
 	    }
 	    if(vetoCandidate) break; 
@@ -345,10 +345,10 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::accuSort(std::vector<l1t::Jet>
       }
     }
   
-  AccumulatingSort <l1t::Jet> etaPosSorterBar(7);
-  AccumulatingSort <l1t::Jet> etaPosSorterEnd(4);
-  AccumulatingSort <l1t::Jet> etaNegSorterBar(7);
-  AccumulatingSort <l1t::Jet> etaNegSorterEnd(4);
+  AccumulatingSort <l1t::Jet> etaPosSorterBar(10);
+  AccumulatingSort <l1t::Jet> etaPosSorterEnd(10);
+  AccumulatingSort <l1t::Jet> etaNegSorterBar(10);
+  AccumulatingSort <l1t::Jet> etaNegSorterEnd(10);
   std::vector<l1t::Jet> accumEtaPosBar;
   std::vector<l1t::Jet> accumEtaPosEnd;
   std::vector<l1t::Jet> accumEtaNegBar;
@@ -386,11 +386,24 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::accuSort(std::vector<l1t::Jet>
 
   //check for 6 & 7th jets with same et and eta. Keep jet with larger phi
   
-  if(accumEtaPosBar.at(6).hwPt()==accumEtaPosBar.at(5).hwPt() && accumEtaPosBar.at(6).hwEta()==accumEtaPosBar.at(5).hwEta()
-     && accumEtaPosBar.at(6).hwPhi() > accumEtaPosBar.at(5).hwPhi()){
-    accumEtaPosBar.at(5)=accumEtaPosBar.at(6);
+  if(accumEtaPosBar.at(9).hwPt()==accumEtaPosBar.at(8).hwPt() && accumEtaPosBar.at(9).hwEta()==accumEtaPosBar.at(8).hwEta()
+     && accumEtaPosBar.at(9).hwPhi() > accumEtaPosBar.at(8).hwPhi()){
+    accumEtaPosBar.at(8)=accumEtaPosBar.at(9);
+  }
+  if(accumEtaPosEnd.at(9).hwPt()==accumEtaPosEnd.at(8).hwPt() && accumEtaPosEnd.at(9).hwEta()==accumEtaPosEnd.at(8).hwEta()
+     && accumEtaPosEnd.at(9).hwPhi() > accumEtaPosEnd.at(8).hwPhi()){
+    accumEtaPosEnd.at(8)=accumEtaPosEnd.at(9);
+  }
+  if(accumEtaNegBar.at(9).hwPt()==accumEtaNegBar.at(8).hwPt() && accumEtaNegBar.at(9).hwEta()==accumEtaNegBar.at(8).hwEta()
+     && accumEtaNegBar.at(9).hwPhi() > accumEtaNegBar.at(8).hwPhi()){
+    accumEtaNegBar.at(8)=accumEtaNegBar.at(9);
+  }
+  if(accumEtaNegEnd.at(9).hwPt()==accumEtaNegEnd.at(8).hwPt() && accumEtaNegEnd.at(9).hwEta()==accumEtaNegEnd.at(8).hwEta()
+     && accumEtaNegEnd.at(9).hwPhi() > accumEtaNegEnd.at(8).hwPhi()){
+    accumEtaNegEnd.at(8)=accumEtaNegEnd.at(9);
   }
 
+  /*
   if(accumEtaPosEnd.at(3).hwPt()==accumEtaPosEnd.at(2).hwPt() && accumEtaPosEnd.at(3).hwEta()==accumEtaPosEnd.at(2).hwEta()
      && accumEtaPosEnd.at(3).hwPhi() > accumEtaPosEnd.at(2).hwPhi()){
     accumEtaPosEnd.at(2)=accumEtaPosEnd.at(3);
@@ -405,19 +418,30 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::accuSort(std::vector<l1t::Jet>
      && accumEtaNegEnd.at(3).hwPhi() > accumEtaNegEnd.at(2).hwPhi()){
     accumEtaNegEnd.at(2)=accumEtaNegEnd.at(3);
   }
+  */
 
   //truncate
-  accumEtaPosBar.resize(6);
-  accumEtaPosEnd.resize(3);
-  accumEtaNegBar.resize(6);
-  accumEtaNegEnd.resize(3);
+  accumEtaPosBar.resize(100);
+  accumEtaPosEnd.resize(100);
+  accumEtaNegBar.resize(100);
+  accumEtaNegEnd.resize(100);
+  //  accumEtaPosBar.resize(6);
+  //  accumEtaPosEnd.resize(3);
+  //  accumEtaNegBar.resize(6);
+  //  accumEtaNegEnd.resize(3);
   //Rework for more jets
   //  accumEtaPos.resize(24);
   //  accumEtaNeg.resize(24);
 
   // put all 12 candidates in the original jet vector, removing zero energy ones
   jets.clear();
+
   for (l1t::Jet accjet : accumEtaPosBar)
+    {
+      if (accjet.hwPt() > 0) jets.push_back(accjet);
+    }
+
+  for (l1t::Jet accjet : accumEtaPosEnd)
     {
       if (accjet.hwPt() > 0) jets.push_back(accjet);
     }
@@ -428,6 +452,11 @@ void l1t::Stage2Layer2HIJetAlgorithmFirmwareImp1::accuSort(std::vector<l1t::Jet>
     }
   */
   for (l1t::Jet accjet : accumEtaNegBar)
+    {
+      if (accjet.hwPt() > 0) jets.push_back(accjet);
+    }
+
+  for (l1t::Jet accjet : accumEtaNegEnd)
     {
       if (accjet.hwPt() > 0) jets.push_back(accjet);
     }
