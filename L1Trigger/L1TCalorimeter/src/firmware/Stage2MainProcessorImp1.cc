@@ -12,6 +12,7 @@
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2EGammaAlgorithmFirmware.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2TauAlgorithmFirmware.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2JetAlgorithmFirmware.h"
+#include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2HIJetAlgorithmFirmware.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2EtSumAlgorithmFirmware.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2JetSumAlgorithmFirmware.h"
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2DemuxEGAlgoFirmware.h"
@@ -26,7 +27,6 @@ using namespace std;
 l1t::Stage2MainProcessorFirmwareImp1::Stage2MainProcessorFirmwareImp1(unsigned fwv, CaloParamsHelper* params) :
   m_params(params)
 {
-
   m_towerAlgo = new Stage2TowerDecompressAlgorithmFirmwareImp1(m_params);
   m_egClusterAlgo = new Stage2Layer2ClusterAlgorithmFirmwareImp1(m_params,
 							       Stage2Layer2ClusterAlgorithmFirmwareImp1::ClusterInput::EH);
@@ -34,7 +34,10 @@ l1t::Stage2MainProcessorFirmwareImp1::Stage2MainProcessorFirmwareImp1(unsigned f
   m_tauClusterAlgo = new Stage2Layer2ClusterAlgorithmFirmwareImp1(m_params,
 								Stage2Layer2ClusterAlgorithmFirmwareImp1::ClusterInput::EH);
   m_tauAlgo = new Stage2Layer2TauAlgorithmFirmwareImp1(m_params);
-  m_jetAlgo = new Stage2Layer2JetAlgorithmFirmwareImp1(m_params);
+
+  if(!m_params->getHIFlag()) m_jetAlgo = new Stage2Layer2JetAlgorithmFirmwareImp1(m_params);
+  else m_hiJetAlgo = new Stage2Layer2HIJetAlgorithmFirmwareImp1(m_params);
+
   m_sumAlgo = new Stage2Layer2EtSumAlgorithmFirmwareImp1(m_params);
   m_jetSumAlgo = new Stage2Layer2JetSumAlgorithmFirmwareImp1(m_params);
 
@@ -42,7 +45,6 @@ l1t::Stage2MainProcessorFirmwareImp1::Stage2MainProcessorFirmwareImp1(unsigned f
   m_demuxTauAlgo = new Stage2Layer2DemuxTauAlgoFirmwareImp1(m_params);
   m_demuxJetAlgo = new Stage2Layer2DemuxJetAlgoFirmwareImp1(m_params);
   m_demuxSumsAlgo = new Stage2Layer2DemuxSumsAlgoFirmwareImp1(m_params);
-
 }
 
 l1t::Stage2MainProcessorFirmwareImp1::~Stage2MainProcessorFirmwareImp1()
@@ -76,14 +78,16 @@ void l1t::Stage2MainProcessorFirmwareImp1::processEvent(const std::vector<l1t::C
   m_egAlgo->processEvent( egClusters, outTowers, mpEGammas );
   m_tauClusterAlgo->processEvent( outTowers, tauClusters );
   m_tauAlgo->processEvent( tauClusters,outTowers, mpTaus );
-  m_jetAlgo->processEvent( outTowers, mpJets, mpAllJets );
+  if(!m_params->getHIFlag()) m_jetAlgo->processEvent( outTowers, mpJets, mpAllJets );
+  else m_hiJetAlgo->processEvent( outTowers, mpJets, mpAllJets );
+
   m_sumAlgo->processEvent( outTowers, towerSums );
   m_jetSumAlgo->processEvent( mpAllJets, jetSums );
 
   clusters.insert( clusters.end(), egClusters.begin(), egClusters.end() );
 
   mpSums.insert( mpSums.end(), towerSums.begin(), towerSums.end() );
-  mpSums.insert( mpSums.end(), jetSums.begin(), jetSums.end() );
+   mpSums.insert( mpSums.end(), jetSums.begin(), jetSums.end() );
 
 
   // processing below is actually performed by the Demux card
@@ -94,7 +98,6 @@ void l1t::Stage2MainProcessorFirmwareImp1::processEvent(const std::vector<l1t::C
   m_demuxTauAlgo->processEvent( mpTaus, taus );
   m_demuxJetAlgo->processEvent( mpJets, jets );
   m_demuxSumsAlgo->processEvent( mpSums, etSums );
-
 }
 
 
@@ -106,7 +109,8 @@ void l1t::Stage2MainProcessorFirmwareImp1::print(std::ostream& out) const {
   out << "  EG ID algo       : " << (m_egAlgo?1:0) << std::endl;
   out << "  Tau cluster algo : " << (m_tauClusterAlgo?1:0) << std::endl;
   out << "  Tau ID algo      : " << (m_tauAlgo?1:0) << std::endl;
-  out << "  Jet algo         : " << (m_jetAlgo?1:0) << std::endl;
+  if(!m_params->getHIFlag()) out << "  Jet algo         : " << (m_jetAlgo?1:0) << std::endl;
+  else out << "  Jet algo         : " << (m_hiJetAlgo?1:0) << std::endl;
   out << "  Jet sum algo     : " << (m_jetSumAlgo?1:0) << std::endl;
   out << "  Sums algo        : " << (m_sumAlgo?1:0) << std::endl;
 

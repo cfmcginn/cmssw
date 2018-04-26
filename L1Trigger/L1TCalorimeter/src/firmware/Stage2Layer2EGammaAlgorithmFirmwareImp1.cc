@@ -244,8 +244,8 @@ void l1t::Stage2Layer2EGammaAlgorithmFirmwareImp1::processEvent(const std::vecto
       
   }
 
-  AccumulatingSort <l1t::EGamma> etaPosSorter(6);
-  AccumulatingSort <l1t::EGamma> etaNegSorter(6);
+  AccumulatingSort <l1t::EGamma> etaPosSorter(28);
+  AccumulatingSort <l1t::EGamma> etaNegSorter(28);
   std::vector<l1t::EGamma> accumEtaPos;
   std::vector<l1t::EGamma> accumEtaNeg;
 
