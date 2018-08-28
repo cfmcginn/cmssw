@@ -58,6 +58,13 @@ process.GlobalTag.toGet.extend([
 ])
 
 process.load('RecoHI.HiCentralityAlgos.HiCentrality_cfi')
+process.hiCentrality.srcHFhits = cms.InputTag("reducedHcalRecHits", "hfreco")
+process.hiCentrality.srcEBhits = cms.InputTag("reducedEcalRecHitsEB")
+process.hiCentrality.srcEEhits = cms.InputTag("reducedEcalRecHitsEE")
+process.hiCentrality.producePixelhits = cms.bool(False)
+process.hiCentrality.srcVertex = cms.InputTag("offlinePrimaryVertices")
+process.hiCentrality.srcTracks = cms.InputTag("generalTracks")
+process.hiCentrality.producePixelTracks = cms.bool(False)
 
 process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 process.centralityBin.Centrality = cms.InputTag("hiCentrality")
@@ -89,6 +96,7 @@ process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_XeXe_mc")
 process.akPu4PFcorr.payload = "AK4PF"
 process.akCs4PFcorr.payload = "AK4PF"
 process.ak4PFcorr.payload = "AK4PF"
+process.akPu4Calocorr.payload = "AK4Calo"
 # Use this version for JEC
 #process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_JECPP")
 
@@ -175,9 +183,9 @@ process.ggHiNtuplizerGED = process.ggHiNtuplizer.clone(
 #########################
 process.ana_step = cms.Path(
     # process.hltanalysisReco *
-    # process.hiCentrality *
-    # process.centralityBin *
-    # process.hiEvtAnalyzer *
+    process.hiCentrality *
+    process.centralityBin *
+    process.hiEvtAnalyzer *
     process.HiGenParticleAna *
     process.jetSequences +
     # process.egmGsfElectronIDSequence + #Should be added in the path for VID module
