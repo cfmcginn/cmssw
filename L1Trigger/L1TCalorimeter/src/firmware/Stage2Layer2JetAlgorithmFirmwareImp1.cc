@@ -427,15 +427,16 @@ std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::J
       for(int i = 0; i < 2; ++i){ring[i+2] = ring[i];}
     }
     else if(chunkyString == "ChunkySandwich4" || chunkyString == "ChunkySandwich" || chunkyString == "ChunkySandwich8"){//Need to calculate two or siz additional phiflaps. Note that ChunkySandwich defaults to ChunkySandwich4 variant
+
       for(int rI = 0; rI < (ringSize-2)/2; ++rI){
 	int iphiUp2   = jetPhi + size + (stripIt + nStrips*(rI+1));
 	int iphiDown2 = jetPhi - size - (stripIt + nStrips*(rI+1));
-	while ( iphiUp > CaloTools::kHBHENrPhi )   iphiUp   -= CaloTools::kHBHENrPhi;
-	while ( iphiDown < 1 ) iphiDown += CaloTools::kHBHENrPhi;
-      
+	while ( iphiUp2 > CaloTools::kHBHENrPhi )   iphiUp2   -= CaloTools::kHBHENrPhi;
+	while ( iphiDown2 < 1 ) iphiDown2 += CaloTools::kHBHENrPhi;
+	
 	for (int ieta=jetEta-size+1; ieta<jetEta+size; ++ieta) {	
 	  if (abs(ieta) > CaloTools::mpEta(CaloTools::kHFEnd)) continue;
-	
+	  
 	  int towEta = ieta;
 	  if (jetEta>0 && towEta<=0) towEta-=1;
 	  if (jetEta<0 && towEta>=0) towEta+=1;
