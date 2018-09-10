@@ -426,7 +426,11 @@ std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::J
     else if(chunkyString == "ChunkySandwich2"){//simplest of the sandwiches - we will just reuse phi flaps
       for(int i = 0; i < 2; ++i){ring[i+2] = ring[i];}
     }
-    else if(chunkyString == "ChunkySandwich4" || chunkyString == "ChunkySandwich" || chunkyString == "ChunkySandwich8"){//Need to calculate two or siz additional phiflaps. Note that ChunkySandwich defaults to ChunkySandwich4 variant
+    else if(chunkyString == "ChunkySandwich2Ave" || chunkyString == "ChunkySandwich"){//simplest of the sandwiches - we will just reuse phi flaps
+      ring[2] = ((ring[0] + ring[1]) >> 1); //bitwise, effective div by 2
+      ring[3] = (ring[0] + ring[1]); // just make sure it is >= max val
+    }
+    else if(chunkyString == "ChunkySandwich4" || chunkyString == "ChunkySandwich8"){//Need to calculate two or siz additional phiflaps. Note that ChunkySandwich defaults to ChunkySandwich4 variant
 
       for(int rI = 0; rI < (ringSize-2)/2; ++rI){
 	int iphiUp2   = jetPhi + size + (stripIt + nStrips*(rI+1));
