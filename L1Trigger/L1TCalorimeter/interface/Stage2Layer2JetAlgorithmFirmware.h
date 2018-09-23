@@ -51,6 +51,8 @@ namespace l1t {
 				 const std::vector<l1t::CaloTower> & towers,
 				 const std::string chunkySandwichStr);
 
+		std::map<int,int> getSumEtEtaMap(const std::vector<l1t::CaloTower> & towers);
+
   private:
 
     CaloParamsHelper* const params_;
