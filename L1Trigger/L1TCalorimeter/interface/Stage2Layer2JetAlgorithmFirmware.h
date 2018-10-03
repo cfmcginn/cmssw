@@ -13,6 +13,8 @@
 #ifndef Stage2Layer2JetAlgorithmFirmware_H
 #define Stage2Layer2JetAlgorithmFirmware_H
 
+#include <map>
+
 #include "L1Trigger/L1TCalorimeter/interface/Stage2Layer2JetAlgorithm.h"
 #include "L1Trigger/L1TCalorimeter/interface/CaloParamsHelper.h"
 
@@ -27,7 +29,7 @@ namespace l1t {
 			      std::vector<Jet> & jets, std::vector<Jet> & alljets) override;
 
     void create(const std::vector<CaloTower> & towers,
-	                      std::vector<Jet> & jets, std::vector<Jet> & alljets, std::string PUSubMethod);
+		std::vector<Jet> & jets, std::vector<Jet> & alljets, std::string PUSubMethod, const bool hiMode);
 
     void accuSort(std::vector<Jet> & jets);
 
@@ -41,15 +43,20 @@ namespace l1t {
 
     std::vector<int> getChunkyRing(Jet & jet, int pos,
 				   const std::vector<l1t::CaloTower> & towers,
-				   const std::string chunkyString);
+				   const std::string chunkyString,
+				   const bool hiMode);
 
     int chunkyDonutPUEstimate(Jet & jet, int pos,
-                              const std::vector<l1t::CaloTower> & towers);
+                              const std::vector<l1t::CaloTower> & towers,
+			      const bool hiMode);
 
     //Adding chunky sandwich, chunkydonut variant using only phiflaps. Useful for simple handiling of calorimeter hardware ieta strips, and in high pu environment like PbPb
     int chunkySandwichPUEstimate(Jet & jet, int pos,
 				 const std::vector<l1t::CaloTower> & towers,
-				 const std::string chunkySandwichStr);
+				 const std::string chunkySandwichStr,
+				 const bool hiMode);
+
+    std::map<int,int> getSumEtEtaMap(const std::vector<l1t::CaloTower> & towers); 
 
   private:
 
