@@ -53,7 +53,7 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::processEvent(const std::vector<l
 							     std::vector<l1t::Jet> & alljets) {
   
   // find jets
-  create(towers, jets, alljets, params_->jetPUSType());
+  create(towers, jets, alljets, params_->jetPUSType(), params_->hiMode());
 
   // calibrate all jets
   calibrate(alljets, 0, true); // pass all jets and the hw threshold above which to calibrate
@@ -67,7 +67,8 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::processEvent(const std::vector<l
 void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::create(const std::vector<l1t::CaloTower> & towers,
 						       std::vector<l1t::Jet> & jets, 
 						       std::vector<l1t::Jet> & alljets, 
-						       std::string PUSubMethod) {
+						       std::string PUSubMethod,
+						       const bool hiMode) {
 
   
   // etaSide=1 is positive eta, etaSide=-1 is negative eta
@@ -97,6 +98,8 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::create(const std::vector<l1t::Ca
 	
 	int ieta = theRings.at(ringGroupIt-1).at(ringIt);
        
+	if(hiMode && std::abs(ieta) >= 25 && std::abs(ieta) < 29) continue;
+
 	// the jets in this ring
 	std::vector<l1t::Jet> jetsRing;
 	
@@ -130,14 +133,14 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::create(const std::vector<l1t::Ca
 	      int ietaTest = ieta+deta;
 	      int iphiTest = iphi+dphi;
 	      
-	      // wrap around phi
-	      while ( iphiTest > CaloTools::kHBHENrPhi ) iphiTest -= CaloTools::kHBHENrPhi;
-	      while ( iphiTest < 1 ) iphiTest += CaloTools::kHBHENrPhi;
-	      
 	      // wrap over eta=0
 	      if (ieta > 0 && ietaTest <=0) ietaTest -= 1;
 	      if (ieta < 0 && ietaTest >=0) ietaTest += 1;
-	   
+	      if(hiMode && std::abs(ietaTest) >= 25 && std::abs(ietaTest) < 29) continue; 
+	      // wrap around phi
+	      while ( iphiTest > CaloTools::kHBHENrPhi ) iphiTest -= CaloTools::kHBHENrPhi;
+	      while ( iphiTest < 1 ) iphiTest += CaloTools::kHBHENrPhi;
+	      	   
 	      // check jet mask and sum tower et
 	      const CaloTower& towTest = CaloTools::getTower(towers, CaloTools::caloEta(ietaTest), iphiTest);
 	      towEt = towTest.hwPt();
@@ -171,12 +174,12 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::create(const std::vector<l1t::Ca
 	      }
 	      
 	      if (PUSubMethod == "ChunkyDonut"){
-		puEt = chunkyDonutPUEstimate(jet, 5, towers);
+		puEt = chunkyDonutPUEstimate(jet, 5, towers, hiMode);
 		iEt -= puEt;
 	      }
 
 	      if(PUSubMethod.find("ChunkySandwich") != std::string::npos){
-		puEt = chunkySandwichPUEstimate(jet, 5, towers, PUSubMethod);
+		puEt = chunkySandwichPUEstimate(jet, 5, towers, PUSubMethod, hiMode);
 		iEt -= puEt;
 	      }
 
@@ -193,6 +196,7 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::create(const std::vector<l1t::Ca
 		puEt = 0;
 		for(int ieta=jetEtaLow; ieta<=jetEtaHigh; ++ieta){
 		  if(ieta==0) continue; // eta start from +- 1
+		  if(hiMode && std::abs(ieta) >= 25 && std::abs(ieta) < 29) continue;
 		  auto iter=SumEtEtaMap.find(ieta);
 		  puEt+=iter->second;
 		}
@@ -214,7 +218,8 @@ void l1t::Stage2Layer2JetAlgorithmFirmwareImp1::create(const std::vector<l1t::Ca
 
 		for(int ieta=jetEtaLow; ieta<=jetEtaHigh; ++ieta){
 		  if(ieta==0) continue;
-		  auto iter=SumEtEtaMap.find(ieta);
+		  if(hiMode && std::abs(ieta) >= 25 && std::abs(ieta) < 29) continue;
+		  auto iter=SumEtEtaMap.find(ieta);		  
 		  puEt+=iter->second;
 		}
 		puEt-=iEt;
@@ -424,7 +429,8 @@ std::map<int,int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getSumEtEtaMap(cons
 
 std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::Jet & jet, int size, 
 									  const std::vector<l1t::CaloTower> & towers,
-									  const std::string chunkyString)
+									  const std::string chunkyString,
+									  const bool hiMode)
 {
   int jetPhi = jet.hwPhi();
   int jetEta = CaloTools::mpEta(jet.hwEta());
@@ -456,6 +462,8 @@ std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::J
       if (jetEta>0 && towEta<=0) towEta-=1;
       if (jetEta<0 && towEta>=0) towEta+=1;
             
+      if(std::abs(towEta) >= 25 && std::abs(towEta) < 29 && hiMode) continue; 
+
       const CaloTower& towPhiUp = CaloTools::getTower(towers, CaloTools::caloEta(towEta), iphiUp);
       int towEt = towPhiUp.hwPt();
       ring[0] += towEt;
@@ -474,32 +482,35 @@ std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::J
       if ( jetEta>0 && ietaDown<=0 ) ietaDown -= 1;
       
       // do EtaUp
-      for (int iphi=jetPhi-size+1; iphi<jetPhi+size; ++iphi) {
-	
-	if (abs(ietaUp) <= CaloTools::mpEta(CaloTools::kHFEnd)) {    
-	  int towPhi = iphi;
-	  while ( towPhi > CaloTools::kHBHENrPhi ) towPhi -= CaloTools::kHBHENrPhi;
-	  while ( towPhi < 1 ) towPhi += CaloTools::kHBHENrPhi;
+      if(std::abs(ietaUp) < 25 || std::abs(ietaUp) >= 29 || !hiMode){ 
+	for (int iphi=jetPhi-size+1; iphi<jetPhi+size; ++iphi) {
 	  
-	  const CaloTower& towEtaUp = CaloTools::getTower(towers, CaloTools::caloEta(ietaUp), towPhi);
-	  int towEt = towEtaUp.hwPt();
-	  ring[2] += towEt;
+	  if (abs(ietaUp) <= CaloTools::mpEta(CaloTools::kHFEnd)) {    
+	    int towPhi = iphi;
+	    while ( towPhi > CaloTools::kHBHENrPhi ) towPhi -= CaloTools::kHBHENrPhi;
+	    while ( towPhi < 1 ) towPhi += CaloTools::kHBHENrPhi;
+	    
+	    const CaloTower& towEtaUp = CaloTools::getTower(towers, CaloTools::caloEta(ietaUp), towPhi);
+	    int towEt = towEtaUp.hwPt();
+	    ring[2] += towEt;
+	  }
 	}
       }
-
       // do EtaDown
-      for (int iphi=jetPhi-size+1; iphi<jetPhi+size; ++iphi) {
-	
-	if (abs(ietaDown) <= CaloTools::mpEta(CaloTools::kHFEnd)) {
-	  int towPhi = iphi;
-	  while ( towPhi > CaloTools::kHBHENrPhi ) towPhi -= CaloTools::kHBHENrPhi;
-	  while ( towPhi < 1 ) towPhi += CaloTools::kHBHENrPhi;
+      if(std::abs(ietaDown) < 25 || std::abs(ietaDown) >= 29 || !hiMode){ 
+	for (int iphi=jetPhi-size+1; iphi<jetPhi+size; ++iphi) {
 	  
-	  const CaloTower& towEtaDown = CaloTools::getTower(towers, CaloTools::caloEta(ietaDown), towPhi);
-	  int towEt = towEtaDown.hwPt();
-	  ring[3] += towEt;
-	}	
-      }     
+	  if (abs(ietaDown) <= CaloTools::mpEta(CaloTools::kHFEnd)) {
+	    int towPhi = iphi;
+	    while ( towPhi > CaloTools::kHBHENrPhi ) towPhi -= CaloTools::kHBHENrPhi;
+	    while ( towPhi < 1 ) towPhi += CaloTools::kHBHENrPhi;
+	    
+	    const CaloTower& towEtaDown = CaloTools::getTower(towers, CaloTools::caloEta(ietaDown), towPhi);
+	    int towEt = towEtaDown.hwPt();
+	    ring[3] += towEt;
+	  }	
+	}     
+      }
     }
     else if(chunkyString == "ChunkySandwich2"){//simplest of the sandwiches - we will just reuse phi flaps
       for(int i = 0; i < 2; ++i){ring[i+2] = ring[i];}
@@ -523,6 +534,8 @@ std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::J
 	  if (jetEta>0 && towEta<=0) towEta-=1;
 	  if (jetEta<0 && towEta>=0) towEta+=1;
 	  
+	  if(std::abs(towEta) >= 25 && std::abs(towEta) < 29 && hiMode) continue; 
+
 	  const CaloTower& towPhiUp = CaloTools::getTower(towers, CaloTools::caloEta(towEta), iphiUp2);
 	  int towEt = towPhiUp.hwPt();
 	  ring[2 + rI*2] += towEt;
@@ -543,11 +556,12 @@ std::vector<int> l1t::Stage2Layer2JetAlgorithmFirmwareImp1::getChunkyRing(l1t::J
 
 
 int l1t::Stage2Layer2JetAlgorithmFirmwareImp1::chunkyDonutPUEstimate(l1t::Jet & jet, int size, 
-								     const std::vector<l1t::CaloTower> & towers){
+								     const std::vector<l1t::CaloTower> & towers,
+								     const bool hiMode){
  
    // ring is a vector with 4 ring strips, one for each side of the ring
   // PhiUp, PhiDown, EtaUp, EtaDown, sorted w/ call to chunkyring
-  std::vector<int> ring = getChunkyRing(jet, size, towers, "ChunkyDonut");
+  std::vector<int> ring = getChunkyRing(jet, size, towers, "ChunkyDonut", hiMode);
   for(unsigned int i=0; i<4; ++i) jet.setPUDonutEt(i, (short int) ring[i]);
   return ( ring[0] + ring[1] + ring[2] );  
 }
@@ -556,9 +570,10 @@ int l1t::Stage2Layer2JetAlgorithmFirmwareImp1::chunkyDonutPUEstimate(l1t::Jet & 
 //Useful for simple handling of zeroed ieta strips and for high PU environments like PbPb
 int l1t::Stage2Layer2JetAlgorithmFirmwareImp1::chunkySandwichPUEstimate(l1t::Jet & jet, int size, 
 									const std::vector<l1t::CaloTower> & towers,
-									const std::string chunkySandwichStr){
+									const std::string chunkySandwichStr,
+									const bool hiMode){
   //ring will be handled identically by all variants for now - could consider a different picking w/ ChunkySandwich8, say to exclude a downward fluctuation w/ 1,2,3 from ring, etc.
-  std::vector<int> ring = getChunkyRing(jet, size, towers, chunkySandwichStr);
+  std::vector<int> ring = getChunkyRing(jet, size, towers, chunkySandwichStr, hiMode);
   for(unsigned int i=0; i<4; ++i) jet.setPUDonutEt(i, (short int)ring[i]);
   return (ring[0] + ring[1] + ring[2]);  
 }
