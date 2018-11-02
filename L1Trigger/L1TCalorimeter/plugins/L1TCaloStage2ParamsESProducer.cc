@@ -122,6 +122,7 @@ L1TCaloStage2ParamsESProducer::L1TCaloStage2ParamsESProducer(const edm::Paramete
   m_params_helper.setEgBypassECALFG(conf.getParameter<unsigned>("egBypassECALFG"));
   m_params_helper.setEgBypassHoE(conf.getParameter<unsigned>("egBypassHoE"));
 
+  m_params_helper.setHiMode(conf.getParameter<unsigned>("hiMode")); 
 
   edm::FileInPath egMaxHOverELUTFile = conf.getParameter<edm::FileInPath>("egMaxHOverELUTFile");
   std::ifstream egMaxHOverELUTStream(egMaxHOverELUTFile.fullPath());

@@ -59,7 +59,8 @@ namespace l1t {
            jetPUSUsePhiRingFlag=47,
 	   metPhiCalibration=48,
 	   metHFPhiCalibration=49,
-	   NUM_CALOPARAMNODES=50
+	   hiModeFlag=50,
+	   NUM_CALOPARAMNODES=51
     };
 
     CaloParamsHelper() { pnode_.resize(NUM_CALOPARAMNODES); }
@@ -168,6 +169,11 @@ namespace l1t {
       else return pnode_[egBypassHoEFlag].uparams_[0];
     }
 
+    unsigned hiMode() const {
+      if(pnode_[hiModeFlag].uparams_.empty()) return 0;
+      else return pnode_[hiModeFlag].uparams_[0];
+    }
+
     int egHOverEcutBarrel() const {return pnode_[egHOverEBarrel].iparams_[0]; }
     int egHOverEcutEndcap() const {return pnode_[egHOverEEndcap].iparams_[0]; }
 
@@ -225,6 +231,10 @@ namespace l1t {
     void setEgBypassHoE(unsigned flag) {
       pnode_[egBypassHoEFlag].uparams_.resize(1);
       pnode_[egBypassHoEFlag].uparams_[0] = flag;
+    }
+    void setHiMode(unsigned flag) {
+      pnode_[hiModeFlag].uparams_.resize(1);
+      pnode_[hiModeFlag].uparams_[0] = flag;
     }
     void setEgHOverEcutBarrel(int cut) { 
       pnode_[egHOverEBarrel].iparams_.resize(1);
