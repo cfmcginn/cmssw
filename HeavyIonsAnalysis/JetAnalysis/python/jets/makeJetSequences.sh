@@ -22,7 +22,7 @@ do
                         do
                             [ $object == "Calo" ] && [ $groom != "NONE" ] && continue
 
-                            for radius in 3 4
+                            for radius in 1 2 3 4 5 6
                             do
                                 [ $sub == "NONE" ] && subt="" || subt=$sub
                                 [ $groom == "NONE" ] && groomt="" || groomt=$groom

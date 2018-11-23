@@ -56,6 +56,7 @@ configs=(
    runForestAOD_HI_MIX_103X.py
    runForestAOD_pponAA_MB_103X.py
    runForestAOD_pponAA_MIX_103X.py
+   runForestAOD_pponAA_JEC_103X.py
    runForestAOD_pponAA_DATA_103X.py
 )
 
