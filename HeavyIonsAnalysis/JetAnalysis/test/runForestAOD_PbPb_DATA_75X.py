@@ -26,14 +26,14 @@ process.HiForest.HiForestVersion = cms.string(version)
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
                                 #"/store/group/phys_heavyions/velicanu/reco/HIPhysicsMinBiasUPC/v0/000/262/548/recoExpress_84.root"
-                            'file:samples/PbPb_DATA_AOD.root'
+                            'file:/afs/cern.ch/work/c/cmcginn/private/Foresting/HybridSub_20190625/F6B66C98-32BB-E511-9615-02163E014338.root'
 				)
 )
 
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1))
+    input = cms.untracked.int32(100))
 
 process.output = cms.OutputModule("PoolOutputModule",
                                   outputCommands = cms.untracked.vstring('drop *',
@@ -72,7 +72,7 @@ process.centralityBin.centralityVariable = cms.string("HFtowers")
 #####################################################################################
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName=cms.string("HiForestAOD.root"))
+                                   fileName=cms.string("HiForestAOD_DATA.root"))
 
 #####################################################################################
 # Additional Reconstruction and Analysis: Main Body

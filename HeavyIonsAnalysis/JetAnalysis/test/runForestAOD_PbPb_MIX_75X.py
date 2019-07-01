@@ -26,14 +26,14 @@ process.HiForest.HiForestVersion = cms.string(version)
 process.source = cms.Source("PoolSource",
                             duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
                             fileNames = cms.untracked.vstring(
-                                "/store/himc/HINPbPbWinter16DR/Pythia6_bJetFCR30_pp502_Hydjet_Cymbal_MB/AODSIM/75X_mcRun2_HeavyIon_v14-v1/120000/0421C390-6BF6-E611-8856-008CFA0021D4.root"
+        "file:/afs/cern.ch/work/c/cmcginn/private/Foresting/HybridSub_20190625/A4E8E697-B9E8-E611-A485-549F3525B220.root"
 #                                "file:samples/PbPb_MC_RECODEBUG.root"
                                 )
                             )
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input = cms.untracked.int32(100)
 )
 
 process.output = cms.OutputModule("PoolOutputModule",
@@ -84,7 +84,7 @@ process.centralityBin.nonDefaultGlauberModel = cms.string("HydjetCymbal5Ev8")
 #####################################################################################
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName=cms.string("HiForestAOD.root"))
+                                   fileName=cms.string("HiForestAOD_MC.root"))
 
 #####################################################################################
 # Additional Reconstruction and Analysis: Main Body
