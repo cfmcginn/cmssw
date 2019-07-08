@@ -9,7 +9,7 @@ do
 	fi	
         for algo in ak
         do
-            for sub in Pu Cs NONE
+            for sub in Pu Cs FlowPuCs NONE
             do
                 for groom in SoftDrop SoftDropZ05B15 NONE
                 do
@@ -18,7 +18,7 @@ do
                         for object in PF Calo
                         do
 			    # no Cs Calo or pp jets
-			    if ( [ $object == "Calo" ] || [ $system == "pp" ] ) && ( [ $sub == "Cs" ] ) ; then
+			    if ( [ $object == "Calo" ] || [ $system == "pp" ] ) && ( [ $sub == "Cs" ] || [ $sub == "FlowPuCs" ] ) ; then
 			        continue
                             fi
                             if ( [ $object == "Calo" ] ) &&  ( [ $groom == "SoftDrop" ] || [ $groom == "SoftDropZ05B15" ] ) ; then
@@ -39,7 +39,7 @@ do
 			        matchGenjets="HiSignalGenJets"
 			        partons="hiSignalGenParticles"
 			    fi
-			    if ( [ $sub == "Vs" ] || [ $sub == "Cs" ] ) ; then
+			    if ( [ $sub == "Vs" ] || [ $sub == "Cs" ] || [ $sub == "FlowPuCs" ] ) ; then
 			        resolveByDist="True"
 			    else 
 			        resolveByDist="False"
@@ -80,7 +80,7 @@ do
 
                             if [ $sample == "mc" ] || [ $sample == "jec" ] || [ $sample == "mb" ]; then
                                 ismc="True"
-                                if ( [ $object == "PF" ] ) && ( [ $sub == "Cs" ] || [ $system == "pp" ] ) && ( [ $sample != "mb" ] ) ; then
+                                if ( [ $object == "PF" ] ) && ( [ $sub == "Cs" ] || [ $sub == "FlowPuCs" ] || [ $system == "pp" ] ) && ( [ $sample != "mb" ] ) ; then
                                   doGenTaus="True"
                                 fi
                             fi

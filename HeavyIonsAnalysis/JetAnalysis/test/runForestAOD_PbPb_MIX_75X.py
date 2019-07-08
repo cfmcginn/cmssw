@@ -33,7 +33,7 @@ process.source = cms.Source("PoolSource",
 
 # Number of events we want to process, -1 = all events
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(1)
 )
 
 process.output = cms.OutputModule("PoolOutputModule",
@@ -101,7 +101,9 @@ process.load('HeavyIonsAnalysis.JetAnalysis.hiSignalGenFilters')
 
 
 #PU minimal tower cut reco sequence
-process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedPbPb')
+#process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedPbPb')
+# EDIT HERE FOR CSPU HYBRID
+process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_appendCSPUHybrid')
 # nominal jet reco sequence
 #process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_nominalPbPb')
 # replace above with this one for JEC:
@@ -109,6 +111,28 @@ process.load('HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedPbPb')
 
 #rho analyzer
 process.load('HeavyIonsAnalysis.JetAnalysis.hiFJRhoAnalyzer_cff')
+
+process.hiPuRhoR3Analyzer = process.hiFJRhoAnalyzer.clone(etaMap = cms.InputTag('hiPuRhoR3Producer','mapEtaEdges','HiForest'),
+                                                          rho = cms.InputTag('hiPuRhoR3Producer','mapToRho'),
+                                                          rhoExtra = cms.InputTag('hiPuRhoR3Producer','mapToRhoExtra'),
+                                                          rhom = cms.InputTag('hiPuRhoR3Producer','mapToRhoM'),
+                                                          rhoCorr = cms.InputTag('hiPuRhoR3Producer','mapToRhoMedian'),
+                                                          rhomCorr = cms.InputTag('hiPuRhoR3Producer','mapToRhoM'),
+                                                          rhoCorr1Bin = cms.InputTag('hiPuRhoR3Producer','mapToRho'),
+                                                          rhomCorr1Bin = cms.InputTag('hiPuRhoR3Producer','mapToRhoM'),
+                                                          nTow = cms.InputTag('hiPuRhoR3Producer','mapToNTow'),
+                                                          towExcludePt = cms.InputTag('hiPuRhoR3Producer','mapToTowExcludePt'),
+                                                          towExcludePhi = cms.InputTag('hiPuRhoR3Producer','mapToTowExcludePhi'),
+                                                          towExcludeEta = cms.InputTag('hiPuRhoR3Producer','mapToTowExcludeEta'),
+                                                          rhoGrid = cms.InputTag('hiFJGridEmptyAreaCalculator','mapRhoVsEtaGrid'),
+                                                          meanRhoGrid = cms.InputTag('hiFJGridEmptyAreaCalculator','mapMeanRhoVsEtaGrid'),
+                                                          etaMaxRhoGrid = cms.InputTag('hiFJGridEmptyAreaCalculator','mapEtaMaxGrid'),
+                                                          etaMinRhoGrid = cms.InputTag('hiFJGridEmptyAreaCalculator','mapEtaMinGrid'),
+                                                          rhoFlowFitParams = cms.InputTag('hiFJRhoFlowModulationProducer','rhoFlowFitParams'),
+                                                          ptJets = cms.InputTag('hiPuRhoR3Producer', 'ptJets'),
+                                                          etaJets = cms.InputTag('hiPuRhoR3Producer', 'etaJets'),
+                                                          areaJets = cms.InputTag('hiPuRhoR3Producer', 'areaJets'),
+                                                          )
 
 ####################################################################################
 
@@ -209,6 +233,7 @@ process.ana_step = cms.Path(
                             process.ak5GenNjettiness *
                             process.jetSequences +
                             process.hiFJRhoAnalyzer +
+                            process.hiPuRhoR3Analyzer + 
                             process.ggHiNtuplizer +
                             process.ggHiNtuplizerGED +
                             process.pfcandAnalyzer +
