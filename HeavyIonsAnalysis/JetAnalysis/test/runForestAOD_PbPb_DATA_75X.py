@@ -85,7 +85,9 @@ process.TFileService = cms.Service("TFileService",
 #############################
 
 #require the pu algo to use a certain threshold of towers for bg subtraction
-process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedDataPbPb")
+
+process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_appendCSPUHybridData")
+#process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puLimitedDataPbPb")
 #or don't do that
 #process.load("HeavyIonsAnalysis.JetAnalysis.FullJetSequence_puUnlimitedDataPbPb")
 
