@@ -14,9 +14,9 @@ do
             do
                 for object in PF Calo
                 do
-                    for sub in Pu Cs NONE
+                    for sub in Pu Cs FlowPuCs NONE
                     do
-                        [ $object == "Calo" ] && [ $sub == "Cs" ] && continue
+                        [ $object == "Calo" ] && ( [ $sub == "Cs" ] || [ $sub == "FlowPuCs" ] ) && continue
 
                         for groom in SoftDrop SoftDropZ05B15 NONE
                         do
@@ -48,6 +48,8 @@ do
                                 fi
 
                                 if [ $sub == "Cs" ]; then
+                                    resolveByDist="True"
+                                elif [ $sub == "FlowPuCs" ]; then
                                     resolveByDist="True"
                                 else
                                     resolveByDist="False"
@@ -86,7 +88,7 @@ do
                                 if [ $sample != "data" ]; then
                                     ismc="True"
                                     if [ $object == "PF" ] \
-                                        && ( [ $sub == "Cs" ] || [ $system == "pp" ] ) \
+                                        && ( [ $sub == "Cs" ] || [ $sub == "FlowPuCs" ] || [ $system == "pp" ] ) \
                                         && [ $sample != "mb" ]; then
                                         doGenTaus="True"
                                     fi
@@ -110,7 +112,7 @@ do
                                 fulltag=${algo}${subt}${groomt}${radius}${object}
                                 jetseqfile=${fulltag}JetSequence_${reco}on${system}_${sample}_cff.py
 
-				if [ $sub == "Cs" ] || [ $sub == "Pu" ]; then
+				if [ $sub == "Cs" ] || [ $sub == "FlowPuCs" ] || [ $sub == "Pu" ]; then
                                     cat templateSequence_bTag_LegacyFlavor_cff.py.txt | sed \
 					-e "s/ALGO_/$algo/g" \
 					-e "s/SUB_/$subt/g" \
@@ -184,7 +186,7 @@ do
                                     echo "${fulltag}patJetsWithBtagging.userData.userInts.src += ['${fulltag}Jets:droppedBranches']" >> $jetseqfile
                                 fi
 
-                                if [[ $sub =~ "Cs" ]] && [ $sample == "mc" ] && [ $reco == "pp" ]; then
+                                if [[ $sub =~ "Cs" ]] && [[ $sub =~ "FlowPuCs" ]] && [ $sample == "mc" ] && [ $reco == "pp" ]; then
 				    echo -e "\n" >> $jetseqfile
                                     echo "${fulltag}JetAnalyzer.matchJets = cms.untracked.bool(True)" >> $jetseqfile				    
                                     echo "${fulltag}JetAnalyzer.matchTag = cms.untracked.InputTag(\"ak"${radius}$"PFpatJetsWithBtagging\")" >> $jetseqfile

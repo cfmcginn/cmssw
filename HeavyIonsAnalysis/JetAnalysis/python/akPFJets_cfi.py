@@ -37,6 +37,7 @@ akCs4PFJets = cms.EDProducer(
     rhom                = cms.InputTag('hiFJRhoProducer','mapToRhoM'),
     csRParam            = cms.double(-1.),
     csAlpha             = cms.double(2.),
+    useModulatedRho     = cms.bool(False),
     writeJetsWithConst  = cms.bool(True),
     jetCollInstanceName = cms.string("pfParticlesCs")
 )
