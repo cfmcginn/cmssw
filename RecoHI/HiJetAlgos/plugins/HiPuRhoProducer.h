@@ -91,11 +91,11 @@ class HiPuRhoProducer : public edm::EDProducer {
   std::vector<fastjet::PseudoJet> fjJets_;          // fastjet jets
   std::vector<fastjet::PseudoJet> fjOriginalInputs_;        // to back-up unsubtracted fastjet inputs
 
-  CaloGeometry const *  geo_;                       // geometry
+  CaloGeometry const *  geo_=NULL;                       // geometry
   std::vector<HcalDetId> allgeomid_;                // all det ids in the geometry
   
-  int                   ietamax_;                   // maximum eta in geometry
-  int                   ietamin_;                   // minimum eta in geometry       
+  int                   ietamax_=-10000;                   // maximum eta in geometry
+  int                   ietamin_=10000;                   // minimum eta in geometry       
   std::map<int,int>     ntowersWithJets_;           // number of towers with jets
   std::map<int,int>     geomtowers_;                // map of geometry towers to det id
   std::map<int,double>  esigma_;                    // energy sigma
