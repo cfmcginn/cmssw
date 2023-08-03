@@ -55,6 +55,9 @@
 #include "DataFormats/L1Trigger/interface/Jet.h"
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 
+//Via GM, for QIE10DataFrame 
+#include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
+
 //
 // class declaration
 //
