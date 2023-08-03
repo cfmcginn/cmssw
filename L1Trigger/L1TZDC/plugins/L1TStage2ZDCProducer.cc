@@ -14,8 +14,11 @@
 // Original Author:  James Brooke
 //         Created:  Thu, 05 Dec 2013 17:39:27 GMT
 //
+// Copied for ZDC by: Chris McGinn
+//        Copy Made: Wed, 03 Aug 2023
+//        Contact: christopher.mc.ginn@cern.ch or
+//                 cfmcginn on github for bugs/issues
 //
-
 // system include files
 #include <memory>
 
@@ -54,10 +57,10 @@
 
 using namespace l1t;
 
-class L1TStage2ZDCProducer : public edm::stream::EDProducer<> {
+class L1TZDCProducer : public edm::stream::EDProducer<> {
 public:
-  explicit L1TStage2ZDCProducer(const edm::ParameterSet& ps);
-  ~L1TStage2ZDCProducer() override;
+  explicit L1TZDCProducer(const edm::ParameterSet& ps);
+  ~L1TZDCProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -100,7 +103,7 @@ private:
   bool m_useStaticConfig;
 };
 
-L1TStage2ZDCProducer::L1TStage2ZDCProducer(const edm::ParameterSet& ps) {
+L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
   // register what you produce
   m_towerMPToken = produces<CaloTowerBxCollection>("MP");
   m_clusterMPToken = produces<CaloClusterBxCollection>("MP");
@@ -133,15 +136,15 @@ L1TStage2ZDCProducer::L1TStage2ZDCProducer(const edm::ParameterSet& ps) {
   m_paramsCacheId = 0;
 }
 
-L1TStage2ZDCProducer::~L1TStage2ZDCProducer() { delete m_params; }
+L1TZDCProducer::~L1TZDCProducer() { delete m_params; }
 
 // ------------ method called to produce the data  ------------
-void L1TStage2ZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   using namespace edm;
 
   using namespace l1t;
 
-  LogDebug("l1t|stage 2") << "L1TStage2ZDCProducer::produce function called..." << std::endl;
+  LogDebug("l1t|stage 2") << "L1TZDCProducer::produce function called..." << std::endl;
 
   //inputs
   Handle<BXVector<CaloTower> > towers;
@@ -248,7 +251,7 @@ void L1TStage2ZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 }
 
 // ------------ method called when starting to processes a run  ------------
-void L1TStage2ZDCProducer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
+void L1TZDCProducer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
   // update parameters and algorithms at run start, if they have changed
   // update params first because the firmware factory relies on pointer to params
 
@@ -315,12 +318,12 @@ void L1TStage2ZDCProducer::beginRun(edm::Run const& iRun, edm::EventSetup const&
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void L1TStage2ZDCProducer::endRun(edm::Run const&, edm::EventSetup const&) {}
+void L1TZDCProducer::endRun(edm::Run const&, edm::EventSetup const&) {}
 
 // ------------ method called when starting to processes a luminosity block  ------------
 /*
 void
-L1TStage2ZDCProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup cons
+L1TZDCProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup cons
 t&)
 {
 }
@@ -329,14 +332,14 @@ t&)
 // ------------ method called when ending the processing of a luminosity block  ------------
 /*
 void
-L1TStage2ZDCProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&
+L1TZDCProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&
 )
 {
 }
 */
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
-void L1TStage2ZDCProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+void L1TZDCProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -345,4 +348,4 @@ void L1TStage2ZDCProducer::fillDescriptions(edm::ConfigurationDescriptions& desc
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(L1TStage2ZDCProducer);
+DEFINE_FWK_MODULE(L1TZDCProducer);
