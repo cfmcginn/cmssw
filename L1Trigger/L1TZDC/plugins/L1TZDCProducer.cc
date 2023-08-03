@@ -97,12 +97,9 @@ L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
   // register what you consume and keep token for later access:
   // CMcGinn: Addition here is the zdcToken - others (tower) kept temporarily
   m_zdcToken = consumes<QIE10DigiCollection>(ps.getParameter<edm::InputTag>("zdcToken"));
-
-  //initialize
-  m_paramsCacheId = 0;
 }
 
-L1TZDCProducer::~L1TZDCProducer() { delete m_params; }
+L1TZDCProducer::~L1TZDCProducer() {}
 
 // ------------ method called to produce the data  ------------
 void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -138,7 +135,6 @@ void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   for (int ibx = 0; ibx < nSamples; ++ibx) {
 
     //CMcGinn: Removing all except etsum again
-    std::vector<EtSum> localMPEtSums;
     std::vector<EtSum> localEtSums;
 
     //CMcGinn: Remove below tower dependencies, only comment out the debug statement to be replaced
@@ -149,7 +145,6 @@ void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   }
 
   //CMcGinn: The only thing we will be placing is etSums - delete the rest
-  iEvent.emplace(m_etMPToken, std::move(mpsums));
   iEvent.emplace(m_etToken, std::move(etsums));
 }
 
