@@ -58,6 +58,7 @@
 //Via GM, for QIE10DataFrame 
 #include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
 
+
 //
 // class declaration
 //
@@ -140,11 +141,28 @@ void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
     //CMcGinn: Removing all except etsum again
     std::vector<EtSum> localEtSums;
 
+    //Inputting dummy values as a test
+    for(int etI = 0; etI < 18; ++etI){
+      ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>> tempL(0.1*etI,0.2*etI,0.3*etI,0.4*etI);
+      
+      l1t::EtSum tempEt = l1t::EtSum();
+      tempEt.setHwPt(etI);
+      tempEt.setHwEta(((double)etI)*0.2);
+      tempEt.setHwPhi(-((double)etI)*0.1);
+      tempEt.setType(EtSum::EtSumType::kTotalEt);
+      localEtSums.push_back(tempEt);
+    }
+
     //CMcGinn: Remove below tower dependencies, only comment out the debug statement to be replaced
     //    LogDebug("L1TDebug") << "BX=" << ibx << ", N(Towers)=" << towers->size(ibx) << std::endl;
 
     //    LogDebug("L1TDebug") << "BX=" << ibx << ", N(Towers)=" << localTowers.size() << std::endl;
 
+    
+    
+
+    for (auto etsum = localEtSums.begin(); etsum != localEtSums.end(); ++etsum)
+      etsums.push_back(ibx, CaloTools::etSumP4Demux(*etsum));    
   }
 
   //CMcGinn: The only thing we will be placing is etSums - delete the rest
