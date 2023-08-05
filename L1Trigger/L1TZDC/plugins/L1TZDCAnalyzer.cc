@@ -47,11 +47,11 @@ namespace l1t {
     //fileservice
     edm::Service<TFileService> m_fs;
     //Declare a tree, member and pointer
-    TTree* m_zdcETSumTree_p;
+    TTree* m_zdcEtSumTree_p;
     //Declare the etSum max and bpx max
-    static const int m_maxETSum = 18;
+    static const int m_maxEtSum = 18;
     static const int m_maxBPX = 10;
-    float m_zdcETSum[m_maxETSum][m_maxBPX];
+    float m_zdcEtSum[m_maxEtSum][m_maxBPX];
 
     //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
     //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
@@ -136,11 +136,13 @@ namespace l1t {
 
       int sumCounter = 0;
       for (auto itr = sums->begin(ibx); itr != sums->end(ibx); ++itr) {
-	m_zdcETSum[sumCounter][ibx] = itr->hwPt();
+	m_zdcEtSum[sumCounter][ibx] = itr->hwPt();
 	
 	++sumCounter;
       }
     }
+
+    m_zdcEtSumTree_p->Fill();
 
     if (doText_)
       edm::LogVerbatim("L1TCaloEvents") << text.str();
@@ -148,8 +150,8 @@ namespace l1t {
 
   // ------------ method called once each job just before starting event loop  ------------
   void L1TZDCAnalyzer::beginJob() {
-    m_zdcETSumTree_p = m_fs->make<TTree>("zdcETSumTree", "");
-    m_zdcETSumTree_p->Branch("zdcETSum", m_zdcETSum, ("m_zdcETSum[" + std::to_string(m_maxETSum) + "][" + std::to_string(m_maxBPX) + "]/f").c_str());    
+    m_zdcEtSumTree_p = m_fs->make<TTree>("zdcEtSumTree", "");
+    m_zdcEtSumTree_p->Branch("zdcEtSum", m_zdcEtSum, ("m_zdcEtSum[" + std::to_string(m_maxEtSum) + "][" + std::to_string(m_maxBPX) + "]/f").c_str());    
   }
 
   // ------------ method called once each job just after ending the event loop  ------------

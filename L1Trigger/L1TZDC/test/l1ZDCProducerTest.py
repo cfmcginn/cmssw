@@ -52,22 +52,21 @@ process.source = cms.Source("PoolSource",
                                  )
 )
 
-#CM Edit: This is what we should replace
-#process.analyzer = cms.EDAnalyzer('newZDCAnalyzer',
-#                                  #zdc = cms.InputTag("hcalDigis","ZDC","RECO"),
-#                                  zdc = cms.InputTag("hcalDigis","ZDC","reRECO"),
-#                                  #zdc = cms.InputTag("hcalDigis","ZDC"),
-#                                  tower = cms.InputTag("towerMaker"),
-#                                  track = cms.InputTag("generalTracks"),
-#                                  pixel = cms.InputTag("siPixelRecHits"),
-#                                  hltresults = cms.InputTag("TriggerResults","","HLT")
-#                              )
-
-#CM End what we should replace
-
-#Try some real basic replacement
-process.producer = cms.EDProducer('L1TZDCProducer',
+#Try some real basic replacement - producer and analyzer
+process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
                                   zdcToken = cms.InputTag("hcalDigis", "ZDC", "reRECO")
+)
+
+process.zdcEtSumAnalyzer = cms.EDAnalyzer('L1TZDCAnalyzer',
+                                  etSumToken = cms.InputTag("zdcEtSumProducer", "zdcEtSums")
+)
+
+
+process.skimOutput = cms.OutputModule("PoolOutputModule",
+                                      fileName = cms.untracked.string("comp.root"),
+                                      outputCommands = cms.untracked.vstring(
+                                          'keep *'
+                                      ),
 )
 
 
@@ -83,37 +82,17 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('103X_dataRun2_v6')
 
 
-#process.es_ascii = cms.ESSource(
-#    'HcalTextCalibrations',
-#    input = cms.VPSet(
-#            cms.PSet(
-#                object = cms.string('ElectronicsMap'),
-#                file = cms.FileInPath("QWAna/QWNtrkOfflineProducer/run2018/HcalElectronicsMap_2018_v3.0_data_ext.txt")
-#                )
-#          )
-#)
 
-#process.es_prefer = cms.ESPrefer('HcalTextCalibrations', 'es_ascii')
+process.produce_step = cms.Path(process.zdcEtSumProducer)
+process.analyze_step = cms.Path(process.zdcEtSumAnalyzer)
+process.output_step = cms.EndPath(process.skimOutput)
 
-#set digi and analyzer
-#process.hcalDigis.InputLabel = "rawDataCollector"
-
-#process.QWInfo = cms.EDProducer('QWEventInfoProducer')
-
-# ZDC info
-#process.load('QWZDC2018Producer_cfi')
-#process.load('ZDC2018Pedestal_cfg')
-#process.zdcdigi.SOI = cms.untracked.int32(4)
-
-#process.digiPath = cms.Path(
-#    process.hcalDigis * 
-#    process.zdcdigi
-#)
-
-#CM: Change the interior of path from process.analyzer to process.producer
-process.analyze_step = cms.Path(process.producer)
 
 process.schedule = cms.Schedule(
-#                    process.digiPath,
-                    process.analyze_step)
+                    process.produce_step,
+                    process.analyze_step,
+#                    process.output_step
+)
 
+
+#uncomment the output for debugging/saving the etsums
