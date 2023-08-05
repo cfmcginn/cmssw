@@ -137,7 +137,7 @@ namespace l1t {
   // ------------ method called once each job just before starting event loop  ------------
   void L1TZDCAnalyzer::beginJob() {
     m_zdcEtSumTree_p = m_fs->make<TTree>("zdcEtSumTree", "");
-    m_zdcEtSumTree_p->Branch("zdcEtSum", m_zdcEtSum, ("m_zdcEtSum[" + std::to_string(m_maxEtSum) + "][" + std::to_string(m_maxBPX) + "]/f").c_str());    
+    m_zdcEtSumTree_p->Branch("zdcEtSum", m_zdcEtSum, ("m_zdcEtSum[" + std::to_string(m_maxEtSum) + "][" + std::to_string(m_maxBPX) + "]/F").c_str());    
   }
 
   // ------------ method called once each job just after ending the event loop  ------------

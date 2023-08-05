@@ -96,7 +96,7 @@ private:
 L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
   // register what you produce
   // CMcGinn: Stripped out everything except the etsums
-  m_etToken = produces<EtSumBxCollection>();
+  m_etToken = produces<EtSumBxCollection>("zdcEtSums");
 
   // register what you consume and keep token for later access:
   // CMcGinn: Addition here is the zdcToken - others (tower) kept temporarily
