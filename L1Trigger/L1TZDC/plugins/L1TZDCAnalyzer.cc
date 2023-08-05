@@ -72,10 +72,6 @@ namespace l1t {
     //CM: Not sure on the rest of these
     TFileDirectory evtDispDir_;
 
-    int m_mpBx = 0;
-    int m_dmxBx = 0;
-    bool m_allBx = false;
-    bool m_doEvtDisp = false;
   };
 
   //
@@ -94,11 +90,6 @@ namespace l1t {
         doHistos_(iConfig.getUntrackedParameter<bool>("doHistos", true)) {
     usesResource(TFileService::kSharedResource);
     //now do what ever initialization is needed
-    
-    m_mpBx = iConfig.getParameter<int>("mpBx");
-    m_dmxBx = iConfig.getParameter<int>("dmxBx");
-    m_allBx = iConfig.getParameter<bool>("allBx");
-    m_doEvtDisp = iConfig.getParameter<bool>("doEvtDisp");
     
     // register what you consume and keep token for later access:
     edm::InputTag nullTag("None");
@@ -124,11 +115,6 @@ namespace l1t {
 
     std::stringstream text;
 
-    //check mpbx and dmxbx
-    if (m_mpBx < -2 || m_mpBx > 2 || m_dmxBx < -2 || m_dmxBx > 2)
-      edm::LogError("L1T")
-          << "Selected MP Bx or Demux Bx to fill histograms is outside of range -2,2. Histos will be empty!";
-    
     Handle<BXVector<l1t::EtSum> > sums;
     iEvent.getByToken(m_sumToken, sums);
 
