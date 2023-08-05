@@ -10,7 +10,7 @@ git cms-init
 #Insert zdcL1T_v0.0.X
 git remote add cfmcginn https://github.com/cfmcginn/cmssw.git
 git fetch cfmcginn zdcL1TOnCMSSW_13_1_0_pre4
-git cms-merge-topic -u cfmcginn:zdcL1T_v0.0.11
+git cms-merge-topic -u cfmcginn:zdcL1T_v0.0.12
 #Note we will do the next line using https instead of Molly's ssh instructions
 #git remote add cms-l1t-offline git@github.com:cms-l1t-offline/cmssw.git
 git remote add cms-l1t-offline https://github.com/cms-l1t-offline/cmssw.git
@@ -29,7 +29,7 @@ mv files_327524.txt?raw=true L1Trigger/L1TZDC/test/files_327524.txt
 
 To test, do
 ```
-cd L1Trigger/L1TCalorimeter/test
+cd L1Trigger/L1TZDC/test
 cmsRun l1ZDCProducerTest.py
 ```
 
