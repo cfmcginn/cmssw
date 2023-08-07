@@ -34,7 +34,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 #process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 #process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 #process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1
@@ -46,19 +46,20 @@ mylist = FileUtils.loadListFromFile('files_327524.txt')
 readFiles = cms.untracked.vstring(*mylist)
 
 process.source = cms.Source("PoolSource",
-                                 fileNames = cms.untracked.vstring(
-                                     'file:/afs/cern.ch/user/m/mcsanad/public/CMSSW_10_3_1/src/zdc/newZDCAnalyzer/test/ED0B7A21-B558-924C-A57E-B1651E8BFFA3.root'
-#                                 *mylist
-                                 )
+                            fileNames = cms.untracked.vstring(
+                            'file:/afs/cern.ch/user/m/mcsanad/public/CMSSW_10_3_1/src/zdc/newZDCAnalyzer/test/ED0B7A21-B558-924C-A57E-B1651E8BFFA3.root'
+#                           *mylist
+                           )
 )
 
 #Try some real basic replacement - producer and analyzer
 process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
-                                  zdcToken = cms.InputTag("hcalDigis", "ZDC", "reRECO")
+  zdcToken = cms.InputTag("hcalDigis", "ZDC", "reRECO")
 )
 
 process.zdcEtSumAnalyzer = cms.EDAnalyzer('L1TZDCAnalyzer',
-                                  etSumToken = cms.InputTag("zdcEtSumProducer", "zdcEtSums")
+  etSumPToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsP"),
+  etSumNToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsN")
 )
 
 
@@ -91,7 +92,7 @@ process.output_step = cms.EndPath(process.skimOutput)
 process.schedule = cms.Schedule(
                     process.produce_step,
                     process.analyze_step,
-#                    process.output_step
+                    process.output_step
 )
 
 
