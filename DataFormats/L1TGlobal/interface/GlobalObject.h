@@ -29,6 +29,8 @@ namespace l1t {
     gtMinBiasHFM0,
     gtMinBiasHFP1,
     gtMinBiasHFM1,
+    gtZDCP,
+    gtZDCM,
     gtETTem,
     gtAsymmetryEt,
     gtAsymmetryHt,
