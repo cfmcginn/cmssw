@@ -727,13 +727,13 @@ double QIE10_regular_fC_full[256][18]={
     tempEtM.setHwPt(sumM);
     tempEtM.setHwEta(-1.);
     tempEtM.setHwPhi(0.);
-    tempEtM.setType(EtSum::EtSumType::kTotalEt);
+    tempEtM.setType(EtSum::EtSumType::kZDCM);
     
     l1t::EtSum tempEtP = l1t::EtSum();
     tempEtP.setHwPt(sumP);
     tempEtP.setHwEta(1.);
     tempEtP.setHwPhi(0.);
-    tempEtP.setType(EtSum::EtSumType::kTotalEt);
+    tempEtP.setType(EtSum::EtSumType::kZDCP);
 
     etsumsP.push_back(ibx, CaloTools::etSumP4Demux(tempEtP));
     etsumsM.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
