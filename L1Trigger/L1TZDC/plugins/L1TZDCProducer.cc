@@ -85,13 +85,13 @@ private:
   // put tokens
   // remove L1TCalorimeter put tokens except the two for ETSums - which we will repurpose
   edm::EDPutTokenT<EtSumBxCollection> m_etTokenP;
-  edm::EDPutTokenT<EtSumBxCollection> m_etTokenN;
+  edm::EDPutTokenT<EtSumBxCollection> m_etTokenM;
 };
 
 L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
   // register what you produce
   m_etTokenP = produces<EtSumBxCollection>("zdcEtSumsP");
-  m_etTokenN = produces<EtSumBxCollection>("zdcEtSumsN");
+  m_etTokenM = produces<EtSumBxCollection>("zdcEtSumsM");
 
   // register what you consume and keep token for later access:
   // CMcGinn: Addition here is the zdcToken - others (tower) kept temporarily
@@ -655,12 +655,12 @@ double QIE10_regular_fC_full[256][18]={
   //outputs
 
   EtSumBxCollection etsumsP(0, 0, nSamples);
-  EtSumBxCollection etsumsN(0, 0, nSamples);
+  EtSumBxCollection etsumsM(0, 0, nSamples);
 
   //rawadc[detector index][time slices]
   unsigned short rawadc[18][10];
   std::vector<EtSum> localEtSumP; //sumZDC positive
-  std::vector<EtSum> localEtSumN; //sumZDC negative
+  std::vector<EtSum> localEtSumM; //sumZDC negative
 
   int counter = 0;
   // the loop below loops over all the elements of the QIE10DigiCollection. Each entry corresponds to one channel
@@ -692,55 +692,55 @@ double QIE10_regular_fC_full[256][18]={
   //std::cout<<"my counter= "<<counter<<std::endl;
   for(int ibx = 0; ibx < nSamples; ibx++){
 
-    double cEMP = 0, cEMN = 0, cHDP = 0, cHDN = 0;
-    double sumcEMP = 0, sumcEMN = 0, sumcHDP = 0, sumcHDN = 0;
+    double cEMP = 0, cEMM = 0, cHDP = 0, cHDM = 0;
+    double sumcEMP = 0, sumcEMM = 0, sumcHDP = 0, sumcHDM = 0;
     //idet=0-4 correpond to the EM channels 
     for(int idet=0; idet<5; idet++)
     {
       unsigned short EMP = rawadc[idet+9][ibx];
-      unsigned short EMN = rawadc[idet][ibx];
+      unsigned short EMM = rawadc[idet][ibx];
       cEMP = QIE10_regular_fC_full[(UChar_t)(EMP)][idet+9];
-      cEMN = QIE10_regular_fC_full[(UChar_t)(EMN)][idet];
+      cEMM = QIE10_regular_fC_full[(UChar_t)(EMM)][idet];
       //cEMP = cEMHAD*QIE10_regular_fC[(UChar_t)(EMP)]*calibconst[1][idet];
-      //cEMN = cEMHAD*QIE10_regular_fC[(UChar_t)(EMN)]*calibconst[0][idet];
+      //cEMM = cEMHAD*QIE10_regular_fC[(UChar_t)(EMM)]*calibconst[0][idet];
       sumcEMP = sumcEMP + cEMP;
-      sumcEMN = sumcEMN + cEMN;
+      sumcEMM = sumcEMM + cEMM;
 
     }
     //idet=5-8 correspond to HAD channels
     for(int idet=5; idet<9; idet++)
     {
       unsigned short HDP = rawadc[idet+9][ibx];
-      unsigned short HDN = rawadc[idet][ibx];
+      unsigned short HDM = rawadc[idet][ibx];
       cHDP = QIE10_regular_fC_full[(UChar_t)(HDP)][idet+9];
-      cHDN = QIE10_regular_fC_full[(UChar_t)(HDN)][idet];
+      cHDM = QIE10_regular_fC_full[(UChar_t)(HDM)][idet];
       //cHDP = QIE10_regular_fC[(UChar_t)(HDP)]*calibconst[1][idet];
-      //cHDN = QIE10_regular_fC[(UChar_t)(HDN)]*calibconst[0][idet];
+      //cHDM = QIE10_regular_fC[(UChar_t)(HDM)]*calibconst[0][idet];
       sumcHDP = sumcHDP + cHDP;
-      sumcHDN = sumcHDN + cHDN;
+      sumcHDM = sumcHDM + cHDM;
     }
-    double sumN = sumcEMN+sumcHDN;
+    double sumM = sumcEMM+sumcHDM;
     double sumP = sumcEMP+sumcHDP;
-    //std::cout<<"bx = "<<ibx<<", sumP= "<<sumP<<", sumN= "<<sumN<<std::endl;
-    if (ibx==4) {std::cout<<", sumN= "<<sumN<<std::endl; std::cout<<", sumP= "<<sumP<<std::endl;}
-    l1t::EtSum tempEtN = l1t::EtSum();
-    tempEtN.setHwPt(sumN);
-    tempEtN.setHwEta(-1.);
-    tempEtN.setHwPhi(0.);
-    tempEtN.setType(EtSum::EtSumType::kTotalEt);
+    //std::cout<<"bx = "<<ibx<<", sumP= "<<sumP<<", sumM= "<<sumM<<std::endl;
+    if (ibx==4) {std::cout<<", sumM= "<<sumM<<std::endl; std::cout<<", sumP= "<<sumP<<std::endl;}
+    l1t::EtSum tempEtM = l1t::EtSum();
+    tempEtM.setHwPt(sumM);
+    tempEtM.setHwEta(-1.);
+    tempEtM.setHwPhi(0.);
+    tempEtM.setType(EtSum::EtSumType::kZDCM);
     
     l1t::EtSum tempEtP = l1t::EtSum();
     tempEtP.setHwPt(sumP);
     tempEtP.setHwEta(1.);
     tempEtP.setHwPhi(0.);
-    tempEtP.setType(EtSum::EtSumType::kTotalEt);
+    tempEtP.setType(EtSum::EtSumType::kZDCP);
 
     etsumsP.push_back(ibx, CaloTools::etSumP4Demux(tempEtP));
-    etsumsN.push_back(ibx, CaloTools::etSumP4Demux(tempEtN));
+    etsumsM.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
 
   } // end of loop over bunch crossings
   iEvent.emplace(m_etTokenP, std::move(etsumsP));
-  iEvent.emplace(m_etTokenN, std::move(etsumsN));
+  iEvent.emplace(m_etTokenM, std::move(etsumsM));
 }
 
 // ------------ method called when starting to processes a run  ------------

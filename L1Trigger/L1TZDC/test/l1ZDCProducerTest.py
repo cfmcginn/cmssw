@@ -59,7 +59,7 @@ process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
 
 process.zdcEtSumAnalyzer = cms.EDAnalyzer('L1TZDCAnalyzer',
   etSumPToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsP"),
-  etSumNToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsN")
+  etSumNToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsM")
 )
 
 
