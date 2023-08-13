@@ -122,6 +122,9 @@ private:
   edm::InputTag zdcDigiSrc_;
   edm::EDGetTokenT<ZDCRecHitCollection> zdcRecHitSrc_;
   edm::ESGetToken<CaloGeometry, CaloGeometryRecord> geometryToken_;
+  // here is the line that was moved 
+  edm::ESGetToken<HcalDbService, HcalDbRecord> hcalDatabaseToken;
+
 
   bool doZDCRecHit_;
   bool doZDCDigi_;
@@ -139,7 +142,9 @@ constexpr double cone2 = 0.5 * 0.5;
 //
 // constructors and destructor
 //
-ZDCTreeProducer::ZDCTreeProducer(const edm::ParameterSet& iConfig) {
+ZDCTreeProducer::ZDCTreeProducer(const edm::ParameterSet& iConfig):
+  hcalDatabaseToken(esConsumes<HcalDbService, HcalDbRecord>())
+ {
   //now do what ever initialization is needed
   doZDCRecHit_ = iConfig.getParameter<bool>("doZDCRecHit");
   doZDCDigi_ = iConfig.getParameter<bool>("doZDCDigi");
@@ -156,6 +161,7 @@ ZDCTreeProducer::ZDCTreeProducer(const edm::ParameterSet& iConfig) {
   calZDCDigi_ = iConfig.getParameter<bool>("calZDCDigi");
   verbose_ = iConfig.getParameter<bool>("verbose");
   geometryToken_ = esConsumes();
+
 }
 
 ZDCTreeProducer::~ZDCTreeProducer() {
@@ -208,7 +214,7 @@ void ZDCTreeProducer::analyze(const edm::Event& ev, const edm::EventSetup& iSetu
     edm::Handle<QIE10DigiCollection> zdcdigis;
     ev.getByLabel(zdcDigiSrc_, zdcdigis);
 
-    edm::ESGetToken<HcalDbService, HcalDbRecord> hcalDatabaseToken;
+    //edm::ESGetToken<HcalDbService, HcalDbRecord> hcalDatabaseToken;
     edm::ESHandle<HcalDbService> conditions = iSetup.getHandle(hcalDatabaseToken);
 
     int nhits = 0;
