@@ -29,6 +29,8 @@ namespace L1Analysis {
     kMinBiasHFM0,
     kMinBiasHFP1,
     kMinBiasHFM1,
+    kZDCP,
+    kZDCM,
     kTotalEtHF,
     kTotalEtEm,
     kTotalHtHF,

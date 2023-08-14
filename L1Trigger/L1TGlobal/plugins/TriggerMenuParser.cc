@@ -2200,11 +2200,11 @@ bool l1t::TriggerMenuParser::parseEnergySum(L1TUtmCondition condEnergySum, unsig
     energySumObjType = GlobalObject::gtMinBiasHFM1;
     cType = TypeMinBiasHFM1;
   } else if (condEnergySum.getType() == esConditionType::ZDCPlus) {
-    energySumObjType = GlobalObject::gtMinBiasHFP1; // Temporary: which l1t Global Object from DataFormats is filling ZDCP?
-    cType = TypeMinBiasHFP1;
+    energySumObjType = GlobalObject::gtZDCP; // Temporary: which l1t Global Object from DataFormats is filling ZDCP?
+    cType = TypeZDCP;
   } else if (condEnergySum.getType() == esConditionType::ZDCMinus) {
-    energySumObjType = GlobalObject::gtMinBiasHFP1; // Temporary: which l1t Global Object from DataFormats is filling ZDCM?
-    cType = TypeMinBiasHFP1;
+    energySumObjType = GlobalObject::gtZDCM; // Temporary: which l1t Global Object from DataFormats is filling ZDCM?
+    cType = TypeZDCM;
   } else if (condEnergySum.getType() == esConditionType::AsymmetryEt) {
     energySumObjType = GlobalObject::gtAsymmetryEt;
     cType = TypeAsymEt;
