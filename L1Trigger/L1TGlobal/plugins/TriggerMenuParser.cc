@@ -287,6 +287,8 @@ void l1t::TriggerMenuParser::parseCondFormats(const L1TUtmTriggerMenu* utmMenu) 
                    condition.getType() == esConditionType::MinBiasHFM0 ||
                    condition.getType() == esConditionType::MinBiasHFP1 ||
                    condition.getType() == esConditionType::MinBiasHFM1 ||
+                   condition.getType() == esConditionType::ZDCPlus ||
+                   condition.getType() == esConditionType::ZDCMinus ||
                    condition.getType() == esConditionType::AsymmetryEt ||
                    condition.getType() == esConditionType::AsymmetryHt ||
                    condition.getType() == esConditionType::AsymmetryEtHF ||
@@ -2197,6 +2199,12 @@ bool l1t::TriggerMenuParser::parseEnergySum(L1TUtmCondition condEnergySum, unsig
   } else if (condEnergySum.getType() == esConditionType::MinBiasHFM1) {
     energySumObjType = GlobalObject::gtMinBiasHFM1;
     cType = TypeMinBiasHFM1;
+  } else if (condEnergySum.getType() == esConditionType::ZDCPlus) {
+    energySumObjType = GlobalObject::gtMinBiasHFP1; // Temporary: which l1t Global Object from DataFormats is filling ZDCP?
+    cType = TypeMinBiasHFP1;
+  } else if (condEnergySum.getType() == esConditionType::ZDCMinus) {
+    energySumObjType = GlobalObject::gtMinBiasHFP1; // Temporary: which l1t Global Object from DataFormats is filling ZDCM?
+    cType = TypeMinBiasHFP1;
   } else if (condEnergySum.getType() == esConditionType::AsymmetryEt) {
     energySumObjType = GlobalObject::gtAsymmetryEt;
     cType = TypeAsymEt;
