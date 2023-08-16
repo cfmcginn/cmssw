@@ -143,8 +143,9 @@ caloParams = cms.ESProducer(
     centralityLUTFile = cms.FileInPath("L1Trigger/L1TCalorimeter/data/centralityLUT_stage1.txt"),
     q2LUTFile         = cms.FileInPath("L1Trigger/L1TCalorimeter/data/q2LUT_stage1.txt"),
     #When zdc lut is ready put it here
-    #    zdcLUTFile        = cms.FileInPath("L1Trigger/L1TCalorimeter/data/"),
-    
+    #For now we are using the q2LUT as a dummy file (parameter does need a file for code to run)
+    zdcLUTFile        = cms.FileInPath("L1Trigger/L1TCalorimeter/data/q2LUT_stage1.txt"),
+
     # HCal FB LUT
     layer1HCalFBLUTUpper = cms.vuint32([
     0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 
