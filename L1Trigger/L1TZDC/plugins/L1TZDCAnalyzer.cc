@@ -51,7 +51,7 @@ namespace l1t {
     //Declare the etSum max and bpx max
     static const int m_maxBPX = 10;
     float m_zdcEtSumP[m_maxBPX];
-    float m_zdcEtSumN[m_maxBPX];
+    float m_zdcEtSumM[m_maxBPX];
 
     //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
     //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
@@ -60,7 +60,7 @@ namespace l1t {
 
     // ----------member data ---------------------------
     edm::EDGetToken m_sumPToken;
-    edm::EDGetToken m_sumNToken;
+    edm::EDGetToken m_sumMToken;
 
     bool doText_;
     bool doHistos_;
@@ -90,9 +90,9 @@ namespace l1t {
     edm::InputTag nullTag("None");
     
     edm::InputTag sumPTag = iConfig.getParameter<edm::InputTag>("etSumPToken");
-    edm::InputTag sumNTag = iConfig.getParameter<edm::InputTag>("etSumNToken");
+    edm::InputTag sumMTag = iConfig.getParameter<edm::InputTag>("etSumMToken");
     m_sumPToken = consumes<l1t::EtSumBxCollection>(sumPTag);
-    m_sumNToken = consumes<l1t::EtSumBxCollection>(sumNTag);
+    m_sumMToken = consumes<l1t::EtSumBxCollection>(sumMTag);
     
     std::cout << "Processing " << sumPTag.label() << std::endl;
   }
@@ -114,11 +114,10 @@ namespace l1t {
 
     Handle<BXVector<l1t::EtSum> > sumsP;
     iEvent.getByToken(m_sumPToken, sumsP);
-    Handle<BXVector<l1t::EtSum> > sumsN;
-    iEvent.getByToken(m_sumNToken, sumsN);
+    Handle<BXVector<l1t::EtSum> > sumsM;
+    iEvent.getByToken(m_sumMToken, sumsM);
 
     for (int ibx = sumsP->getFirstBX(); ibx <= sumsP->getLastBX(); ++ibx) {
-      if (ibx!=4) continue;
       int sumCounterP = 0;
       for (auto itr = sumsP->begin(ibx); itr != sumsP->end(ibx); ++itr) {
 	m_zdcEtSumP[ibx] = itr->hwPt();
@@ -126,14 +125,13 @@ namespace l1t {
       }
       //std::cout<<"sumP= "<<m_zdcEtSumP[ibx]<<std::endl;
     }
-    for (int ibx = sumsN->getFirstBX(); ibx <= sumsN->getLastBX(); ++ibx) {
-      if (ibx!=4) continue;
-      int sumCounterN = 0;
-      for (auto itr = sumsN->begin(ibx); itr != sumsN->end(ibx); ++itr) {
-	m_zdcEtSumN[ibx] = itr->hwPt();
-	++sumCounterN;
+    for (int ibx = sumsM->getFirstBX(); ibx <= sumsM->getLastBX(); ++ibx) {
+      int sumCounterM = 0;
+      for (auto itr = sumsM->begin(ibx); itr != sumsM->end(ibx); ++itr) {
+	m_zdcEtSumM[ibx] = itr->hwPt();
+	++sumCounterM;
       }
-      //std::cout<<"sumN= "<<m_zdcEtSumN[ibx]<<std::endl;
+      //std::cout<<"sumM= "<<m_zdcEtSumM[ibx]<<std::endl;
     }
 
     m_zdcEtSumTree_p->Fill();
@@ -145,8 +143,8 @@ namespace l1t {
   // ------------ method called once each job just before starting event loop  ------------
   void L1TZDCAnalyzer::beginJob() {
     m_zdcEtSumTree_p = m_fs->make<TTree>("zdcEtSumTree", "");
-    m_zdcEtSumTree_p->Branch("zdcEtSumP", m_zdcEtSumP, ("m_zdcEtSumP[" + std::to_string(m_maxBPX) + "]/F").c_str());
-    m_zdcEtSumTree_p->Branch("zdcEtSumN", m_zdcEtSumN, ("m_zdcEtSumN[" + std::to_string(m_maxBPX) + "]/F").c_str());
+    m_zdcEtSumTree_p->Branch("zdcEtSumP", m_zdcEtSumP, ("zdcEtSumP[" + std::to_string(m_maxBPX) + "]/F").c_str());
+    m_zdcEtSumTree_p->Branch("zdcEtSumM", m_zdcEtSumM, ("zdcEtSumM[" + std::to_string(m_maxBPX) + "]/F").c_str());
   }
 
   // ------------ method called once each job just after ending the event loop  ------------
