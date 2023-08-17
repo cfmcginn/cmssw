@@ -49,7 +49,8 @@ namespace l1t {
     //Declare a tree, member and pointer
     TTree* m_zdcEtSumTree_p;
     //Declare the etSum max and bpx max
-    static const int m_maxBPX = 10;
+    //CM NOTE MAX Here is effectively a hardcoded number - you just need to know it from the producer - realistically this is best handled by something passed but for now (2023.08.17) we hardcode    
+    static const int m_maxBPX = 5;
     float m_zdcEtSumP[m_maxBPX];
     float m_zdcEtSumM[m_maxBPX];
 

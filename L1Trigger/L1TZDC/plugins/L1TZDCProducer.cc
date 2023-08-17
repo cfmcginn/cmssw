@@ -675,6 +675,15 @@ double QIE10_regular_fC_full[256][18]={
   EtSumBxCollection etsumsP(0, 0, nSamples);
   EtSumBxCollection etsumsM(0, 0, nSamples);
 
+  EtSumBxCollection etsumsPReduced(0, 0, 5);
+  EtSumBxCollection etsumsMReduced(0, 0, 5);
+
+  //We need to reduce to 5 bunches
+  const int peakBX = 4;
+  const int bxRPlusMinus = 2;
+  const int startBXR =  peakBX - bxRPlusMinus;
+  const int endBXR = peakBX + bxRPlusMinus;
+  
   //rawadc[detector index][time slices]
   unsigned short rawadc[18][10];
   std::vector<EtSum> localEtSumP; //sumZDC positive
@@ -777,9 +786,15 @@ double QIE10_regular_fC_full[256][18]={
     etsumsP.push_back(ibx, CaloTools::etSumP4Demux(tempEtP));
     etsumsM.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
 
+    if(ibx >= startBXR && ibx <= endBXR){
+      etsumsPReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtP));
+      etsumsMReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtM));
+    }
   } // end of loop over bunch crossings
-  iEvent.emplace(m_etTokenP, std::move(etsumsP));
-  iEvent.emplace(m_etTokenM, std::move(etsumsM));
+
+  
+  iEvent.emplace(m_etTokenP, std::move(etsumsPReduced));
+  iEvent.emplace(m_etTokenM, std::move(etsumsMReduced));
 }
 
 // ------------ method called when starting to processes a run  ------------
