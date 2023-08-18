@@ -34,12 +34,12 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 #process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 #process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 #process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
-process.TFileService = cms.Service("TFileService",fileName=cms.string("zdcdigitree_327524.root"))
+process.TFileService = cms.Service("TFileService",fileName=cms.string("zdcdigitree_DoDUMMYPyLUT_327524.root"))
 
 #mylist = FileUtils.loadListFromFile('files_temp.txt')
 mylist = FileUtils.loadListFromFile('files_327524.txt')
@@ -54,12 +54,13 @@ process.source = cms.Source("PoolSource",
 
 #Try some real basic replacement - producer and analyzer
 process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
-  zdcToken = cms.InputTag("hcalDigis", "ZDC", "reRECO")
+                                          zdcToken = cms.InputTag("hcalDigis", "ZDC", "reRECO"),
+                                          doHardCodeLUT = cms.bool(False)           
 )
 
 process.zdcEtSumAnalyzer = cms.EDAnalyzer('L1TZDCAnalyzer',
   etSumPToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsP"),
-  etSumNToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsM")
+  etSumMToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsM")
 )
 
 
@@ -82,6 +83,16 @@ process.skimOutput = cms.OutputModule("PoolOutputModule",
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = cms.string('103X_dataRun2_v6')
 
+#For lookup tables
+# Automatic addition of the customisation function from L1Trigger.Configuration.customiseSettings 
+from L1Trigger.Configuration.customiseSettings import L1TSettingsToCaloParams_2018_v1_4_1
+#call to customisation function L1TSettingsToCaloParams_2018_v1_4_1 imported from L1Trigger.Configuration.customiseSettings                                                                                 
+
+#process.caloStage2Params
+#L1TSettingsToCaloParams_2018_v1_4_1.caloStage2Params.zdcLUTFile        = cms.FileInPath("L1Trigger/L1TCalorimeter/data/zdcLUT_HI_DUMMY.txt"),
+
+process = L1TSettingsToCaloParams_2018_v1_4_1(process)
+#process.caloStage2Params.zdcLUTFile        = cms.FileInPath("L1Trigger/L1TCalorimeter/data/zdcLUT_HI_DUMMY.txt"),
 
 
 process.produce_step = cms.Path(process.zdcEtSumProducer)

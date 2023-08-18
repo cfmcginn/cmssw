@@ -274,6 +274,9 @@ void createLUT(int capid=0){
       if (idet>=14 && idet<18) QIE10_regular_fC_full[ibit][idet]=calibconst[1][idet-9]*QIE10_regular_fC[ibit][capid];
     }
   }
+
+  //CM edit 2023.08.16 - switching to a flattened LUT
+  /*
   std::cout<<"double QIE10_regular_fC_full[256][18]={"<<std::endl;
   for (int ibit = 0; ibit <256; ibit++){
     std::cout<<"{";
@@ -286,5 +289,31 @@ void createLUT(int capid=0){
     std::cout<<std::endl;
   }
     std::cout<<"};"<<std::endl;
+  */
+
+  //Flattened output
+  const double scalingFactor = 10000.0;
+  std::cout << std::endl;
+  std::cout << "# ZDC LUT for HI running 2023, Dummy Implementation (always return 1)" << std::endl;
+  //  std::cout << "# ZDC LUT for HI running 2023, first pass implementation" << std::endl;
+  std::cout << "# Scaling factor of " << (int)scalingFactor << " used for double -> int conversion" << std::endl;
+  std::cout << "#<header> V1 13 32 </header>" << std::endl;
+  std::cout << std::endl;
+
+  int index = 0;
+  //Dump the scaling factor first for instant retrieval
+  std::cout << index << " " << (int)scalingFactor << " # Scaling Factor" << std::endl;
+  ++index;
+  for (int idet=0; idet<18; idet++){
+    for (int ibit = 0; ibit <256; ibit++){
+      //Line for dummy creation
+      std::cout << index << " " << 1 << " # [index ibit=" << ibit << "], [index idet=" << idet << "]" << std::endl;
+      //Line for standard
+      //      std::cout << index << " " << (int)(QIE10_regular_fC_full[ibit][idet]*scalingFactor) << " # [index ibit=" << ibit << "], [index idet=" << idet << "]" << std::endl;
+      ++index;
+    }
+  }
+
+  return;
 }
 

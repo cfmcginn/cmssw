@@ -20,8 +20,9 @@
 //                 cfmcginn on github for bugs/issues
 //
 #include <memory>
-
+#include <iostream>
 // user include files
+
 
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -71,6 +72,9 @@ private:
 
   void beginRun(edm::Run const&, edm::EventSetup const&) override;
   void endRun(edm::Run const&, edm::EventSetup const&) override;
+
+  int zdcLUTIndexHelper(int iDetPos, int iBXPos);  
+
   //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
   //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
@@ -81,14 +85,22 @@ private:
   //https://github.com/ginnocen/UPCopenHFanalysis/blob/zdc_calibrationcode/zdc_calibration/newZDCAnalyzer/plugins/newZDCAnalyzer.cc
   //Add the ZDC token - remove rest later when more certain what is not needed
   edm::EDGetTokenT<QIE10DigiCollection> m_zdcToken;
-
+  edm::ESGetToken<CaloParams, L1TCaloParamsRcd> m_candidateToken;
+ 
   // put tokens
   // remove L1TCalorimeter put tokens except the two for ETSums - which we will repurpose
   edm::EDPutTokenT<EtSumBxCollection> m_etTokenP;
   edm::EDPutTokenT<EtSumBxCollection> m_etTokenM;
+
+  //Following the L1TStage2Layer2Producer
+  CaloParamsHelper* m_params;
+  int m_scaleFactor;
+
+  bool m_doHardCodeLUT;
 };
 
 L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
+
   // register what you produce
   m_etTokenP = produces<EtSumBxCollection>("zdcEtSumsP");
   m_etTokenM = produces<EtSumBxCollection>("zdcEtSumsM");
@@ -96,9 +108,15 @@ L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
   // register what you consume and keep token for later access:
   // CMcGinn: Addition here is the zdcToken - others (tower) kept temporarily
   m_zdcToken = consumes<QIE10DigiCollection>(ps.getParameter<edm::InputTag>("zdcToken"));
+  m_candidateToken = esConsumes<CaloParams, L1TCaloParamsRcd, edm::Transition::BeginRun>();
+
+  // placeholder for the parameters
+  m_params = new CaloParamsHelper;
+
+  m_doHardCodeLUT  =  ps.getParameter<bool>("doHardCodeLUT");
 }
 
-L1TZDCProducer::~L1TZDCProducer() {}
+L1TZDCProducer::~L1TZDCProducer() { delete m_params;}
 
 // ------------ method called to produce the data  ------------
 void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
@@ -657,6 +675,15 @@ double QIE10_regular_fC_full[256][18]={
   EtSumBxCollection etsumsP(0, 0, nSamples);
   EtSumBxCollection etsumsM(0, 0, nSamples);
 
+  EtSumBxCollection etsumsPReduced(0, 0, 5);
+  EtSumBxCollection etsumsMReduced(0, 0, 5);
+
+  //We need to reduce to 5 bunches
+  const int peakBX = 4;
+  const int bxRPlusMinus = 2;
+  const int startBXR =  peakBX - bxRPlusMinus;
+  const int endBXR = peakBX + bxRPlusMinus;
+  
   //rawadc[detector index][time slices]
   unsigned short rawadc[18][10];
   std::vector<EtSum> localEtSumP; //sumZDC positive
@@ -699,21 +726,42 @@ double QIE10_regular_fC_full[256][18]={
     {
       unsigned short EMP = rawadc[idet+9][ibx];
       unsigned short EMM = rawadc[idet][ibx];
-      cEMP = QIE10_regular_fC_full[(UChar_t)(EMP)][idet+9];
-      cEMM = QIE10_regular_fC_full[(UChar_t)(EMM)][idet];
+
+      if(!m_doHardCodeLUT){
+	int cEMP_LUTIndex = zdcLUTIndexHelper(idet+9, (int)EMP);
+	int cEMM_LUTIndex = zdcLUTIndexHelper(idet, (int)EMM);
+
+	cEMP = ((double)m_params->zdcLUT()->data(cEMP_LUTIndex))/((double)m_scaleFactor);
+	cEMM = ((double)m_params->zdcLUT()->data(cEMM_LUTIndex))/((double)m_scaleFactor);
+      }//Old hardcoded lut from GM - superseded by above
+      else{
+	cEMP = QIE10_regular_fC_full[(UChar_t)(EMP)][idet+9];
+	cEMM = QIE10_regular_fC_full[(UChar_t)(EMM)][idet];
+      }
+
       //cEMP = cEMHAD*QIE10_regular_fC[(UChar_t)(EMP)]*calibconst[1][idet];
       //cEMM = cEMHAD*QIE10_regular_fC[(UChar_t)(EMM)]*calibconst[0][idet];
       sumcEMP = sumcEMP + cEMP;
       sumcEMM = sumcEMM + cEMM;
-
     }
     //idet=5-8 correspond to HAD channels
     for(int idet=5; idet<9; idet++)
     {
       unsigned short HDP = rawadc[idet+9][ibx];
       unsigned short HDM = rawadc[idet][ibx];
-      cHDP = QIE10_regular_fC_full[(UChar_t)(HDP)][idet+9];
-      cHDM = QIE10_regular_fC_full[(UChar_t)(HDM)][idet];
+
+      if(!m_doHardCodeLUT){
+	int cHDP_LUTIndex = zdcLUTIndexHelper(idet+9, (int)HDP);
+	int cHDM_LUTIndex = zdcLUTIndexHelper(idet, (int)HDM);
+	
+	cHDP = ((double)m_params->zdcLUT()->data(cHDP_LUTIndex))/((double)m_scaleFactor);
+	cHDM = ((double)m_params->zdcLUT()->data(cHDM_LUTIndex))/((double)m_scaleFactor);
+      }//Old hardcoded lut from GM - superseded by above
+      else{
+	cHDP = QIE10_regular_fC_full[(UChar_t)(HDP)][idet+9];
+	cHDM = QIE10_regular_fC_full[(UChar_t)(HDM)][idet];
+      }
+
       //cHDP = QIE10_regular_fC[(UChar_t)(HDP)]*calibconst[1][idet];
       //cHDM = QIE10_regular_fC[(UChar_t)(HDM)]*calibconst[0][idet];
       sumcHDP = sumcHDP + cHDP;
@@ -738,16 +786,38 @@ double QIE10_regular_fC_full[256][18]={
     etsumsP.push_back(ibx, CaloTools::etSumP4Demux(tempEtP));
     etsumsM.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
 
+    if(ibx >= startBXR && ibx <= endBXR){
+      etsumsPReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtP));
+      etsumsMReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtM));
+    }
   } // end of loop over bunch crossings
-  iEvent.emplace(m_etTokenP, std::move(etsumsP));
-  iEvent.emplace(m_etTokenM, std::move(etsumsM));
+
+  
+  iEvent.emplace(m_etTokenP, std::move(etsumsPReduced));
+  iEvent.emplace(m_etTokenM, std::move(etsumsMReduced));
 }
 
 // ------------ method called when starting to processes a run  ------------
-void L1TZDCProducer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {}
+void L1TZDCProducer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) 
+{
+  edm::ESHandle<CaloParams> candidateHandle = iSetup.getHandle(m_candidateToken);
+
+  m_params->~CaloParamsHelper();
+  m_params = new (m_params) CaloParamsHelper(*candidateHandle.product());  
+  m_scaleFactor = m_params->zdcLUT()->data(0); //First position is the integer scaling factor
+  std::cout << "SCALE FACTOR FOR LUT: " << m_scaleFactor << std::endl;
+}
 
 // ------------ method called when ending the processing of a run  ------------
 void L1TZDCProducer::endRun(edm::Run const&, edm::EventSetup const&) {}
+
+// LUT HELPER METHOD
+int L1TZDCProducer::zdcLUTIndexHelper(int iDetPos, int iBxPos)
+{
+  return 1 + iDetPos*256 + iBxPos;
+}
+
+
 
 // ------------ method called when starting to processes a luminosity block  ------------
 /*
