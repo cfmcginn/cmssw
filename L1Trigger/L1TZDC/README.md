@@ -20,17 +20,13 @@ add "SkipEvent = cms.untracked.vstring('ProductNotFound')" to the "options" PSet
 ----- End Fatal Exception -------------------------------------------------
 ```
 
-The issue is almost certainly the inclusion of "reRECO" as a third argument \
-for the zdcToken input tag to zDCEtSumProducer \
-(CM note: putting this at the tope as I have forgotten \
-this issue twice now)
+The issue is almost certainly the inclusion of "reRECO" as a third argument for the zdcToken input tag to zDCEtSumProducer (CM note: putting this at the tope as I have forgotten this issue twice now)
 
 **********************************************************************
 
 
-Basic build instructions, integratable into Molly's L1Emulator instructions \
-with the Run 3 HI menu using CMSSW_13_1_0_pre4 \
-Found here: https://github.com/mitaylor/L1StudiesFramework/tree/main/RunPbPbL1Ntuples
+Basic build instructions, integratable into Molly's L1Emulator instructions with the Run 3 HI menu using CMSSW_13_1_0_pre4 Found here: \
+https://github.com/mitaylor/L1StudiesFramework/tree/main/RunPbPbL1Ntuples
 
 To build, do
 ```
@@ -41,7 +37,7 @@ git cms-init
 #Insert zdcL1T_v0.0.X
 git remote add cfmcginn https://github.com/cfmcginn/cmssw.git
 git fetch cfmcginn zdcL1TOnCMSSW_13_1_0_pre4
-git cms-merge-topic -u cfmcginn:zdcL1T_v0.2.0
+git cms-merge-topic -u cfmcginn:zdcL1T_v0.2.2
 #Note we will do the next line using https instead of Molly's ssh instructions
 #git remote add cms-l1t-offline git@github.com:cms-l1t-offline/cmssw.git
 git remote add cms-l1t-offline https://github.com/cms-l1t-offline/cmssw.git
