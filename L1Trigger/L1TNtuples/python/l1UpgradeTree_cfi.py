@@ -9,6 +9,8 @@ l1UpgradeTree = cms.EDAnalyzer(
     muonShowerToken = cms.untracked.InputTag("simGmtShowerDigis"),
     muonLegacyToken = cms.untracked.InputTag("muonLegacyInStage2FormatDigis","legacyMuon"),
     sumToken = cms.untracked.InputTag("caloStage2Digis","EtSum"),
+    sumZDCPToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsP"),
+    sumZDCMToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsM"),
     maxL1Upgrade = cms.uint32(60)
 )
 
