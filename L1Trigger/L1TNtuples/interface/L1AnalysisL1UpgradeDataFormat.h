@@ -29,8 +29,6 @@ namespace L1Analysis {
     kMinBiasHFM0,
     kMinBiasHFP1,
     kMinBiasHFM1,
-    kZDCP,
-    kZDCM,
     kTotalEtHF,
     kTotalEtEm,
     kTotalHtHF,
@@ -42,8 +40,11 @@ namespace L1Analysis {
     kAsymEt,
     kAsymHt,
     kAsymEtHF,
-    kAsymHtHF
+    kAsymHtHF,
+    kZDCP,
+    kZDCM
   };
+  //CM comment: Added kZDCP and kZDCM to above but also am gonna directly add zdcEtSums for now as it seems the fastest way to get it into the ttree
 
   struct L1AnalysisL1UpgradeDataFormat {
     L1AnalysisL1UpgradeDataFormat() { Reset(); };
@@ -142,6 +143,23 @@ namespace L1Analysis {
       sumIEt.clear();
       sumIPhi.clear();
       sumBx.clear();
+
+      //CM: Adding additional sum collections - silly but the way to go here for quick turnaround
+      nSumsZDCP = 0;
+      sumZDCPType.clear();
+      sumZDCPEt.clear();
+      sumZDCPPhi.clear();
+      sumZDCPIEt.clear();
+      sumZDCPIPhi.clear();
+      sumZDCPBx.clear();
+
+      nSumsZDCM = 0;
+      sumZDCMType.clear();
+      sumZDCMEt.clear();
+      sumZDCMPhi.clear();
+      sumZDCMIEt.clear();
+      sumZDCMIPhi.clear();
+      sumZDCMBx.clear();
     }
 
     unsigned short int nEGs;
@@ -236,6 +254,22 @@ namespace L1Analysis {
     std::vector<short int> sumIEt;
     std::vector<short int> sumIPhi;
     std::vector<float> sumBx;
+
+    unsigned short int nSumsZDCP;
+    std::vector<short int> sumZDCPType;
+    std::vector<float> sumZDCPEt;
+    std::vector<float> sumZDCPPhi;
+    std::vector<short int> sumZDCPIEt;
+    std::vector<short int> sumZDCPIPhi;
+    std::vector<float> sumZDCPBx;
+
+    unsigned short int nSumsZDCM;
+    std::vector<short int> sumZDCMType;
+    std::vector<float> sumZDCMEt;
+    std::vector<float> sumZDCMPhi;
+    std::vector<short int> sumZDCMIEt;
+    std::vector<short int> sumZDCMIPhi;
+    std::vector<float> sumZDCMBx;
   };
 }  // namespace L1Analysis
 #endif
