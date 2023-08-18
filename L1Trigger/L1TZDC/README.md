@@ -1,4 +1,4 @@
-***** COMMON FIXES ON FAIL (Skip to below for build instructions *****
+***** COMMON FIXES ON FAIL (Skip to below for build instructions) *****
 
 If you see output like the following
 ```
@@ -20,9 +20,9 @@ add "SkipEvent = cms.untracked.vstring('ProductNotFound')" to the "options" PSet
 ----- End Fatal Exception -------------------------------------------------
 ```
 
-The issue is almost certainly the inclusion of "reRECO" as a third argument for the zdcToken input tag to zDCEtSumProducer (CM note: putting this at the tope as I have forgotten this issue twice now)
+The issue is almost certainly the inclusion of "reRECO" as a third argument for the zdcToken input tag to zDCEtSumProducer (CM note: putting this at the top as I have forgotten this issue twice now)
 
-**********************************************************************
+***********************************************************************
 
 
 Basic build instructions, integratable into Molly's L1Emulator instructions with the Run 3 HI menu using CMSSW_13_1_0_pre4 Found here: \
@@ -80,7 +80,7 @@ process.TriggerMenu.L1TriggerMenuFile = cms.string('L1Menu_Collisions2022_v1_2_0
 Create the python by grabbing Molly's runCmsDriver for 2018 data
 ```
 wget https://raw.githubusercontent.com/mitaylor/L1StudiesFramework/main/RunPbPbL1Ntuples/runCmsDriver_2018Data.sh
-cmsRun runCmsDriver_2018Data.sh
+bash runCmsDriver_2018Data.sh
 ```
 
 We need to modify the output, l1Ntuple_2018Data.py
@@ -94,7 +94,8 @@ process.l1UpgradeEmuTree.sumZDCPToken = cms.untracked.InputTag("zdcEtSumProducer
 process.l1UpgradeEmuTree.sumZDCMToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsM")
 
 process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
-  zdcToken = cms.InputTag("hcalDigis", "ZDC")
+  zdcToken = cms.InputTag("hcalDigis", "ZDC"),
+  doHardCodeLUT = cms.bool(False)
 )
 
 process.zdcEtSum = cms.Path(process.zdcEtSumProducer)
