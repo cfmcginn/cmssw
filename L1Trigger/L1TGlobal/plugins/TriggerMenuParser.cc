@@ -22,6 +22,8 @@
  * \new features: Bernhard Arnold, Elisa Fontanesi
  *                - extended for muon track finder index feature (used for Run 3 muon monitoring seeds)
  *                - checkRangeEta function allows to use up to five eta cuts in L1 algorithms
+ * \new features: Elisa Fontanesi
+ *                - extended for Zero Degree Calorimeter triggers (used for Run 3 HI data-taking)
  *
  * $Date$
  * $Revision$
@@ -275,7 +277,7 @@ void l1t::TriggerMenuParser::parseCondFormats(const L1TUtmTriggerMenu* utmMenu) 
             condition.getType() == esConditionType::QuadJet) {
           parseCalo(condition, chipNr, false);
 
-          // parse Energy Sums
+          // parse Energy Sums (and HI trigger objects, treated as energy sums or counters)
         } else if (condition.getType() == esConditionType::TotalEt ||
                    condition.getType() == esConditionType::TotalEtEM ||
                    condition.getType() == esConditionType::TotalHt ||
@@ -287,6 +289,8 @@ void l1t::TriggerMenuParser::parseCondFormats(const L1TUtmTriggerMenu* utmMenu) 
                    condition.getType() == esConditionType::MinBiasHFM0 ||
                    condition.getType() == esConditionType::MinBiasHFP1 ||
                    condition.getType() == esConditionType::MinBiasHFM1 ||
+                   condition.getType() == esConditionType::ZDCPlus ||
+                   condition.getType() == esConditionType::ZDCMinus ||
                    condition.getType() == esConditionType::AsymmetryEt ||
                    condition.getType() == esConditionType::AsymmetryHt ||
                    condition.getType() == esConditionType::AsymmetryEtHF ||
@@ -2197,6 +2201,14 @@ bool l1t::TriggerMenuParser::parseEnergySum(L1TUtmCondition condEnergySum, unsig
   } else if (condEnergySum.getType() == esConditionType::MinBiasHFM1) {
     energySumObjType = GlobalObject::gtMinBiasHFM1;
     cType = TypeMinBiasHFM1;
+  } else if (condEnergySum.getType() == esConditionType::ZDCPlus) {
+    std::cout << "EF ZDC: esConditionType::ZDCPlus " << std::endl;
+    energySumObjType = GlobalObject::gtZDCP;
+    cType = TypeZDCP;
+  } else if (condEnergySum.getType() == esConditionType::ZDCMinus) {
+    std::cout << "EF ZDC: esConditionType::ZDCMinus " << std::endl;
+    energySumObjType = GlobalObject::gtZDCM; 
+    cType = TypeZDCM;
   } else if (condEnergySum.getType() == esConditionType::AsymmetryEt) {
     energySumObjType = GlobalObject::gtAsymmetryEt;
     cType = TypeAsymEt;
@@ -2391,7 +2403,8 @@ bool l1t::TriggerMenuParser::parseEnergySumCorr(const L1TUtmObject* corrESum, un
   std::string type = l1t2string(corrESum->getType());
   std::string name = l1t2string(corrESum->getName());
 
-  LogDebug("TriggerMenuParser") << "\n ****************************************** "
+  std::cout << "EF ZDC: TriggerMenuParser" << "\n ****************************************** "
+    //LogDebug("TriggerMenuParser") << "\n ****************************************** "
                                 << "\n      (in parseEnergySum) "
                                 << "\n condition = " << condition << "\n type      = " << type
                                 << "\n name      = " << name << std::endl;
@@ -2490,7 +2503,8 @@ bool l1t::TriggerMenuParser::parseEnergySumCorr(const L1TUtmObject* corrESum, un
   objParameter[0].phiWindow2Upper = phiWindow2Upper;
 
   // Output for debugging
-  LogDebug("TriggerMenuParser") << "\n      EnergySum ET high threshold (hex) for energy sum object " << cnt << " = "
+  //LogDebug("TriggerMenuParser") << "\n      EnergySum ET high threshold (hex) for energy sum object " << cnt << " = "
+  std::cout << "EF ZDC: \n      EnergySum ET high threshold (hex) for energy sum object " << cnt << " = "
                                 << std::hex << objParameter[0].etLowThreshold << " - " << objParameter[0].etLowThreshold
                                 << "\n      phiWindow Lower / Upper for calo object " << cnt << " = 0x"
                                 << objParameter[0].phiWindow1Lower << " / 0x" << objParameter[0].phiWindow1Upper

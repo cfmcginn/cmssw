@@ -167,6 +167,14 @@ const bool l1t::EnergySumCondition::evaluateCondition(const int bxEval) const {
       type = l1t::EtSum::EtSumType::kMinBiasHFM1;
       MissingEnergy = false;
       break;
+    case gtZDCP:
+      type = l1t::EtSum::EtSumType::kZDCP;
+      MissingEnergy = false;
+      break;
+    case gtZDCM:
+      type = l1t::EtSum::EtSumType::kZDCM;
+      MissingEnergy = false;
+      break;
     case gtAsymmetryEt:
       type = l1t::EtSum::EtSumType::kAsymEt;
       MissingEnergy = false;
@@ -265,6 +273,12 @@ const bool l1t::EnergySumCondition::evaluateCondition(const int bxEval) const {
       LogDebug("L1TGlobal") << "\t\t l1t::EtSum failed Centrality bit" << std::endl;
       return false;
     }
+  }
+  else if (type == l1t::EtSum::EtSumType::kZDCP || type == l1t::EtSum::EtSumType::kZDCM) {
+    std::cout << "--------------------> ZDC ???????????????????" << std::endl;
+    bool myres = checkBit(candEt, centbit);
+    std::cout << "CCLC:  Checking bit " << centbit << "\tResult is: " << myres << std::endl;
+    
   } else {
     // check energy threshold
     if (!checkThreshold(objPar.etLowThreshold, objPar.etHighThreshold, candEt, condGEqVal)) {
