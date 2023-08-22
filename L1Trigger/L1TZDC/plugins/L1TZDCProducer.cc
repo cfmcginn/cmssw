@@ -89,8 +89,8 @@ private:
  
   // put tokens
   // remove L1TCalorimeter put tokens except the two for ETSums - which we will repurpose
-  edm::EDPutTokenT<EtSumBxCollection> m_etTokenP;
-  edm::EDPutTokenT<EtSumBxCollection> m_etTokenM;
+  edm::EDPutTokenT<EtSumBxCollection> m_etToken;
+  //  edm::EDPutTokenT<EtSumBxCollection> m_etTokenM;
 
   //Following the L1TStage2Layer2Producer
   CaloParamsHelper* m_params;
@@ -102,8 +102,8 @@ private:
 L1TZDCProducer::L1TZDCProducer(const edm::ParameterSet& ps) {
 
   // register what you produce
-  m_etTokenP = produces<EtSumBxCollection>("zdcEtSumsP");
-  m_etTokenM = produces<EtSumBxCollection>("zdcEtSumsM");
+  m_etToken = produces<EtSumBxCollection>("zdcEtSums");
+  //  m_etTokenM = produces<EtSumBxCollection>("zdcEtSumsM");
 
   // register what you consume and keep token for later access:
   // CMcGinn: Addition here is the zdcToken - others (tower) kept temporarily
@@ -672,11 +672,13 @@ double QIE10_regular_fC_full[256][18]={
   int nSamples = frametest.samples();
   //outputs
 
-  EtSumBxCollection etsumsP(0, 0, nSamples);
-  EtSumBxCollection etsumsM(0, 0, nSamples);
+  EtSumBxCollection etsums(0, 0, nSamples);
+  //  EtSumBxCollection etsumsP(0, 0, nSamples);
+  //  EtSumBxCollection etsumsM(0, 0, nSamples);
 
-  EtSumBxCollection etsumsPReduced(0, 0, 5);
-  EtSumBxCollection etsumsMReduced(0, 0, 5);
+  EtSumBxCollection etsumsReduced(0, 0, nSamples);
+  //  EtSumBxCollection etsumsPReduced(0, 0, 5);
+  //  EtSumBxCollection etsumsMReduced(0, 0, 5);
 
   //We need to reduce to 5 bunches
   const int peakBX = 4;
@@ -686,8 +688,6 @@ double QIE10_regular_fC_full[256][18]={
   
   //rawadc[detector index][time slices]
   unsigned short rawadc[18][10];
-  std::vector<EtSum> localEtSumP; //sumZDC positive
-  std::vector<EtSum> localEtSumM; //sumZDC negative
 
   int counter = 0;
   // the loop below loops over all the elements of the QIE10DigiCollection. Each entry corresponds to one channel
@@ -783,18 +783,21 @@ double QIE10_regular_fC_full[256][18]={
     tempEtP.setHwPhi(0.);
     tempEtP.setType(EtSum::EtSumType::kZDCP);
 
-    etsumsP.push_back(ibx, CaloTools::etSumP4Demux(tempEtP));
-    etsumsM.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
+    //One object distinguished by type
+    etsums.push_back(ibx, CaloTools::etSumP4Demux(tempEtP));
+    etsums.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
+    //    etsumsM.push_back(ibx, CaloTools::etSumP4Demux(tempEtM));
 
     if(ibx >= startBXR && ibx <= endBXR){
-      etsumsPReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtP));
-      etsumsMReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtM));
+      etsumsReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtP));
+      etsumsReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtM));
+      //      etsumsMReduced.push_back(ibx-startBXR, CaloTools::etSumP4Demux(tempEtM));
     }
   } // end of loop over bunch crossings
 
   
-  iEvent.emplace(m_etTokenP, std::move(etsumsPReduced));
-  iEvent.emplace(m_etTokenM, std::move(etsumsMReduced));
+  iEvent.emplace(m_etToken, std::move(etsumsReduced));
+  //  iEvent.emplace(m_etTokenM, std::move(etsumsMReduced));
 }
 
 // ------------ method called when starting to processes a run  ------------

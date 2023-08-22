@@ -34,7 +34,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 #process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 #process.MessageLogger.cerr.FwkReport.reportEvery = 10000
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
 #process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 #process.MessageLogger.cerr.FwkReport.reportEvery = 1
@@ -55,12 +55,12 @@ process.source = cms.Source("PoolSource",
 #Try some real basic replacement - producer and analyzer
 process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
                                           zdcToken = cms.InputTag("hcalDigis", "ZDC", "reRECO"),
-                                          doHardCodeLUT = cms.bool(False)           
+                                          doHardCodeLUT = cms.bool(True)           
 )
 
 process.zdcEtSumAnalyzer = cms.EDAnalyzer('L1TZDCAnalyzer',
-  etSumPToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsP"),
-  etSumMToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsM")
+                                          etSumToken = cms.InputTag("zdcEtSumProducer", "zdcEtSums")
+#  etSumMToken = cms.InputTag("zdcEtSumProducer", "zdcEtSumsM")
 )
 
 
