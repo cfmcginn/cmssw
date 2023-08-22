@@ -157,23 +157,23 @@ void L1Analysis::L1AnalysisL1Upgrade::SetSum(const l1t::EtSumBxCollection& sums,
   }
 }
 
-void L1Analysis::L1AnalysisL1Upgrade::SetSumZDCP(const l1t::EtSumBxCollection& sumsZDCP, unsigned maxL1Upgrade) {
-  for (int ibx = sumsZDCP.getFirstBX(); ibx <= sumsZDCP.getLastBX(); ++ibx) {
-    for (l1t::EtSumBxCollection::const_iterator it = sumsZDCP.begin(ibx);
-         it != sumsZDCP.end(ibx) && l1upgrade_.nSumsZDCP < maxL1Upgrade;
+void L1Analysis::L1AnalysisL1Upgrade::SetSumZDC(const l1t::EtSumBxCollection& sumsZDC, unsigned maxL1Upgrade) {
+  for (int ibx = sumsZDC.getFirstBX(); ibx <= sumsZDC.getLastBX(); ++ibx) {
+    for (l1t::EtSumBxCollection::const_iterator it = sumsZDC.begin(ibx);
+         it != sumsZDC.end(ibx) && l1upgrade_.nSumsZDC < maxL1Upgrade;
          it++) {
       int type = static_cast<int>(it->getType());
-      l1upgrade_.sumZDCPType.push_back(type);
-      l1upgrade_.sumZDCPEt.push_back(it->et());
-      l1upgrade_.sumZDCPPhi.push_back(it->phi());
-      l1upgrade_.sumZDCPIEt.push_back(it->hwPt());
-      l1upgrade_.sumZDCPIPhi.push_back(it->hwPhi());
-      l1upgrade_.sumZDCPBx.push_back(ibx);
-      l1upgrade_.nSumsZDCP++;
+      l1upgrade_.sumZDCType.push_back(type);
+      l1upgrade_.sumZDCEt.push_back(it->et());
+      l1upgrade_.sumZDCPhi.push_back(it->phi());
+      l1upgrade_.sumZDCIEt.push_back(it->hwPt());
+      l1upgrade_.sumZDCIPhi.push_back(it->hwPhi());
+      l1upgrade_.sumZDCBx.push_back(ibx);
+      l1upgrade_.nSumsZDC++;
     }
   }
 }
-
+/*
 void L1Analysis::L1AnalysisL1Upgrade::SetSumZDCM(const l1t::EtSumBxCollection& sumsZDCM, unsigned maxL1Upgrade) {
   for (int ibx = sumsZDCM.getFirstBX(); ibx <= sumsZDCM.getLastBX(); ++ibx) {
     for (l1t::EtSumBxCollection::const_iterator it = sumsZDCM.begin(ibx);
@@ -190,3 +190,4 @@ void L1Analysis::L1AnalysisL1Upgrade::SetSumZDCM(const l1t::EtSumBxCollection& s
     }
   }
 }
+*/

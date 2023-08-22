@@ -145,14 +145,15 @@ namespace L1Analysis {
       sumBx.clear();
 
       //CM: Adding additional sum collections - silly but the way to go here for quick turnaround
-      nSumsZDCP = 0;
-      sumZDCPType.clear();
-      sumZDCPEt.clear();
-      sumZDCPPhi.clear();
-      sumZDCPIEt.clear();
-      sumZDCPIPhi.clear();
-      sumZDCPBx.clear();
+      nSumsZDC = 0;
+      sumZDCType.clear();
+      sumZDCEt.clear();
+      sumZDCPhi.clear();
+      sumZDCIEt.clear();
+      sumZDCIPhi.clear();
+      sumZDCBx.clear();
 
+      /*
       nSumsZDCM = 0;
       sumZDCMType.clear();
       sumZDCMEt.clear();
@@ -160,6 +161,7 @@ namespace L1Analysis {
       sumZDCMIEt.clear();
       sumZDCMIPhi.clear();
       sumZDCMBx.clear();
+      */
     }
 
     unsigned short int nEGs;
@@ -255,14 +257,15 @@ namespace L1Analysis {
     std::vector<short int> sumIPhi;
     std::vector<float> sumBx;
 
-    unsigned short int nSumsZDCP;
-    std::vector<short int> sumZDCPType;
-    std::vector<float> sumZDCPEt;
-    std::vector<float> sumZDCPPhi;
-    std::vector<short int> sumZDCPIEt;
-    std::vector<short int> sumZDCPIPhi;
-    std::vector<float> sumZDCPBx;
+    unsigned short int nSumsZDC;
+    std::vector<short int> sumZDCType;
+    std::vector<float> sumZDCEt;
+    std::vector<float> sumZDCPhi;
+    std::vector<short int> sumZDCIEt;
+    std::vector<short int> sumZDCIPhi;
+    std::vector<float> sumZDCBx;
 
+    /*
     unsigned short int nSumsZDCM;
     std::vector<short int> sumZDCMType;
     std::vector<float> sumZDCMEt;
@@ -270,6 +273,7 @@ namespace L1Analysis {
     std::vector<short int> sumZDCMIEt;
     std::vector<short int> sumZDCMIPhi;
     std::vector<float> sumZDCMBx;
+    */
   };
 }  // namespace L1Analysis
 #endif

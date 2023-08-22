@@ -84,22 +84,25 @@ bash runCmsDriver_2018Data.sh
 ```
 
 We need to modify the output, l1Ntuple_2018Data.py
-Towards the end add this block
+Towards the end add this block, but before the line
+
+"MassReplaceInputTag(process, new="rawDataMapperByLabel", old="rawDataCollector")"
 ****************************
 ```
-process.l1UpgradeTree.sumZDCPToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsP")
-process.l1UpgradeTree.sumZDCMToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsM")
+process.l1UpgradeTree.sumZDCToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSums")
 
-process.l1UpgradeEmuTree.sumZDCPToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsP")
-process.l1UpgradeEmuTree.sumZDCMToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSumsM")
+process.l1UpgradeEmuTree.sumZDCToken = cms.untracked.InputTag("zdcEtSumProducer", "zdcEtSums")
 
 process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
   zdcToken = cms.InputTag("hcalDigis", "ZDC"),
-  doHardCodeLUT = cms.bool(False)
+  doHardCodeLUT = cms.bool(True)
 )
 
 process.zdcEtSum = cms.Path(process.zdcEtSumProducer)
 process.schedule.append(process.zdcEtSum)
+
+#ABOVE CODE BEFORE THIS LINE
+MassReplaceInputTag(process, new="rawDataMapperByLabel", old="rawDataCollector")
 ```
 ****************************
 
