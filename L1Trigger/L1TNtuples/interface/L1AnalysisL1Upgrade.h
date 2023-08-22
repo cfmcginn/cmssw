@@ -33,8 +33,8 @@ namespace L1Analysis {
     void SetMuon(const edm::Handle<l1t::MuonBxCollection> muon, unsigned maxL1Upgrade) { SetMuon(*muon, maxL1Upgrade); }
     void SetMuonShower(const edm::Handle<l1t::MuonShowerBxCollection> muonShower, unsigned maxL1Upgrade) { SetMuonShower(*muonShower, maxL1Upgrade); }
 
-    void SetSumZDCP(const edm::Handle<l1t::EtSumBxCollection> sumsZDCP, unsigned maxL1Upgrade) { SetSumZDCP(*sumsZDCP, maxL1Upgrade); }
-    void SetSumZDCM(const edm::Handle<l1t::EtSumBxCollection> sumsZDCM, unsigned maxL1Upgrade) { SetSumZDCM(*sumsZDCM, maxL1Upgrade); }
+    void SetSumZDC(const edm::Handle<l1t::EtSumBxCollection> sumsZDC, unsigned maxL1Upgrade) { SetSumZDC(*sumsZDC, maxL1Upgrade); }
+    //    void SetSumZDCM(const edm::Handle<l1t::EtSumBxCollection> sumsZDCM, unsigned maxL1Upgrade) { SetSumZDCM(*sumsZDCM, maxL1Upgrade); }
 
     void SetEm(const l1t::EGammaBxCollection& em, unsigned maxL1Upgrade);
     void SetTau(const l1t::TauBxCollection& tau, unsigned maxL1Upgrade);
@@ -43,8 +43,8 @@ namespace L1Analysis {
     void SetMuon(const l1t::MuonBxCollection& muon, unsigned maxL1Upgrade);
     void SetMuonShower(const l1t::MuonShowerBxCollection& muonShower, unsigned maxL1Upgrade);
 
-    void SetSumZDCP(const l1t::EtSumBxCollection& sumsZDCP, unsigned maxL1Upgrade);
-    void SetSumZDCM(const l1t::EtSumBxCollection& sumsZDCM, unsigned maxL1Upgrade);
+    void SetSumZDC(const l1t::EtSumBxCollection& sumsZDC, unsigned maxL1Upgrade);
+    //    void SetSumZDCM(const l1t::EtSumBxCollection& sumsZDCM, unsigned maxL1Upgrade);
 
     L1AnalysisL1UpgradeDataFormat* getData() { return &l1upgrade_; }
 

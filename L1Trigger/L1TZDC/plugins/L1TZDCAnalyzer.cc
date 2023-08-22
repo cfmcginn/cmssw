@@ -60,8 +60,8 @@ namespace l1t {
     //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
     // ----------member data ---------------------------
-    edm::EDGetToken m_sumPToken;
-    edm::EDGetToken m_sumMToken;
+    edm::EDGetToken m_sumToken;
+    //    edm::EDGetToken m_sumMToken;
 
     bool doText_;
     bool doHistos_;
@@ -90,12 +90,12 @@ namespace l1t {
     // register what you consume and keep token for later access:
     edm::InputTag nullTag("None");
     
-    edm::InputTag sumPTag = iConfig.getParameter<edm::InputTag>("etSumPToken");
-    edm::InputTag sumMTag = iConfig.getParameter<edm::InputTag>("etSumMToken");
-    m_sumPToken = consumes<l1t::EtSumBxCollection>(sumPTag);
-    m_sumMToken = consumes<l1t::EtSumBxCollection>(sumMTag);
+    edm::InputTag sumTag = iConfig.getParameter<edm::InputTag>("etSumToken");
+    //    edm::InputTag sumMTag = iConfig.getParameter<edm::InputTag>("etSumMToken");
+    m_sumToken = consumes<l1t::EtSumBxCollection>(sumTag);
+    //    m_sumMToken = consumes<l1t::EtSumBxCollection>(sumMTag);
     
-    std::cout << "Processing " << sumPTag.label() << std::endl;
+    std::cout << "Processing " << sumTag.label() << std::endl;
   }
 
   L1TZDCAnalyzer::~L1TZDCAnalyzer() {
@@ -113,28 +113,27 @@ namespace l1t {
 
     std::stringstream text;
 
-    Handle<BXVector<l1t::EtSum> > sumsP;
-    iEvent.getByToken(m_sumPToken, sumsP);
-    Handle<BXVector<l1t::EtSum> > sumsM;
-    iEvent.getByToken(m_sumMToken, sumsM);
+    //    Handle<EtSumBxCollection> sums;
+    Handle<BXVector<l1t::EtSum> > sums;
+    iEvent.getByToken(m_sumToken, sums);
+    //    Handle<BXVector<l1t::EtSum> > sumsM;
+    //    iEvent.getByToken(m_sumMToken, sumsM);
 
-    for (int ibx = sumsP->getFirstBX(); ibx <= sumsP->getLastBX(); ++ibx) {
-      int sumCounterP = 0;
-      for (auto itr = sumsP->begin(ibx); itr != sumsP->end(ibx); ++itr) {
-	m_zdcEtSumP[ibx] = itr->hwPt();
-	++sumCounterP;
+    for (int ibx = sums->getFirstBX(); ibx <= sums->getLastBX(); ++ibx) {
+      for (auto itr = sums->begin(ibx); itr != sums->end(ibx); ++itr) {
+	if(itr->getType() == l1t::EtSum::EtSumType::kZDCP) m_zdcEtSumP[ibx] = itr->hwPt();
+	if(itr->getType() == l1t::EtSum::EtSumType::kZDCM) m_zdcEtSumM[ibx] = itr->hwPt();
       }
-      //std::cout<<"sumP= "<<m_zdcEtSumP[ibx]<<std::endl;
     }
+    /*
     for (int ibx = sumsM->getFirstBX(); ibx <= sumsM->getLastBX(); ++ibx) {
       int sumCounterM = 0;
       for (auto itr = sumsM->begin(ibx); itr != sumsM->end(ibx); ++itr) {
 	m_zdcEtSumM[ibx] = itr->hwPt();
 	++sumCounterM;
       }
-      //std::cout<<"sumM= "<<m_zdcEtSumM[ibx]<<std::endl;
     }
-
+    */
     m_zdcEtSumTree_p->Fill();
 
     if (doText_)
