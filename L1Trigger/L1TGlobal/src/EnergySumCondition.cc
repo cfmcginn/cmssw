@@ -167,14 +167,6 @@ const bool l1t::EnergySumCondition::evaluateCondition(const int bxEval) const {
       type = l1t::EtSum::EtSumType::kMinBiasHFM1;
       MissingEnergy = false;
       break;
-    case gtZDCP:
-      type = l1t::EtSum::EtSumType::kZDCP;
-      MissingEnergy = false;
-      break;
-    case gtZDCM:
-      type = l1t::EtSum::EtSumType::kZDCM;
-      MissingEnergy = false;
-      break;
     case gtAsymmetryEt:
       type = l1t::EtSum::EtSumType::kAsymEt;
       MissingEnergy = false;
@@ -231,6 +223,14 @@ const bool l1t::EnergySumCondition::evaluateCondition(const int bxEval) const {
       type = l1t::EtSum::EtSumType::kCentrality;
       MissingEnergy = false;
       break;
+    case gtZDCP:                                                                                                 
+      type = l1t::EtSum::EtSumType::kZDCP;                                                     
+      MissingEnergy = false;                                                                                                                                        
+      break;                                                                                                        
+    case gtZDCM:                                                                                                                          
+      type = l1t::EtSum::EtSumType::kZDCM;                                                                                   
+      MissingEnergy = false;                                                                                                                                        
+      break;  
     default:
       edm::LogError("L1TGlobal")
           << "\n  Error: "
@@ -275,10 +275,7 @@ const bool l1t::EnergySumCondition::evaluateCondition(const int bxEval) const {
     }
   }
   else if (type == l1t::EtSum::EtSumType::kZDCP || type == l1t::EtSum::EtSumType::kZDCM) {
-    std::cout << "--------------------> ZDC ???????????????????" << std::endl;
-    bool myres = checkBit(candEt, centbit);
-    std::cout << "CCLC:  Checking bit " << centbit << "\tResult is: " << myres << std::endl;
-    
+    return false;
   } else {
     // check energy threshold
     if (!checkThreshold(objPar.etLowThreshold, objPar.etHighThreshold, candEt, condGEqVal)) {
