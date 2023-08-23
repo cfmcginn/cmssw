@@ -73,6 +73,7 @@ private:
 
   // input tokens
   edm::EDGetTokenT<CaloTowerBxCollection> m_towerToken;
+  edm::EDGetTokenT<EtSumBxCollection> m_zdcEtSumToken;
   edm::ESGetToken<CaloParams, L1TCaloParamsRcd> m_candidateToken;
   edm::ESGetToken<CaloParams, L1TCaloParamsO2ORcd> m_o2oProtoToken;
 
@@ -115,6 +116,7 @@ L1TStage2Layer2Producer::L1TStage2Layer2Producer(const edm::ParameterSet& ps) {
 
   // register what you consume and keep token for later access:
   m_towerToken = consumes<CaloTowerBxCollection>(ps.getParameter<edm::InputTag>("towerToken"));
+  m_zdcEtSumToken = consumes<EtSumBxCollection>(ps.getParameter<edm::InputTag>("zdcEtSumToken"));
   m_candidateToken = esConsumes<CaloParams, L1TCaloParamsRcd, edm::Transition::BeginRun>();
 
   // placeholder for the parameters
@@ -146,6 +148,11 @@ void L1TStage2Layer2Producer::produce(edm::Event& iEvent, const edm::EventSetup&
   //inputs
   Handle<BXVector<CaloTower> > towers;
   iEvent.getByToken(m_towerToken, towers);
+
+  //zdc inputs
+  Handle<BXVector<l1t::EtSum> > zdcEtSums;
+  iEvent.getByToken(m_zdcEtSumToken, zdcEtSums);
+  
 
   int bxFirst = towers->getFirstBX();
   int bxLast = towers->getLastBX();
@@ -234,6 +241,31 @@ void L1TStage2Layer2Producer::produce(edm::Event& iEvent, const edm::EventSetup&
                          << ", N(Tau)=" << localTaus.size() << ", N(Jet)=" << localJets.size()
                          << ", N(Sums)=" << localEtSums.size() << std::endl;
   }
+
+  const int bxPeakVal = 2;
+  //  const int bxCenter = (zdcEtSums->getLastBX() + zdcEtSums->getFirstBX())/2;
+  std::cout << zdcEtSums->getFirstBX() << ", " << zdcEtSums->getLastBX() << ", " << bxPeakVal << std::endl;
+  for (int ibx = zdcEtSums->getFirstBX(); ibx <= zdcEtSums->getLastBX(); ++ibx) {
+    //    if(ibx < bxFirst || ibx > bxLast) continue;
+    
+    if(ibx != bxPeakVal) continue;
+
+    for (auto itr = zdcEtSums->begin(ibx); itr != zdcEtSums->end(ibx); ++itr) {
+
+      l1t::EtSum tempSum = *itr;
+
+      etsums.push_back(ibx-bxPeakVal, CaloTools::etSumP4Demux(tempSum));
+    }
+  }  
+
+  std::cout << "ET SUM CHECK: " << std::endl;
+  for (int ibx = etsums.getFirstBX(); ibx <= etsums.getLastBX(); ++ibx) {
+    for (auto itr = etsums.begin(ibx); itr != etsums.end(ibx); ++itr) {
+      std::cout << itr->hwPt() << ", " << itr->getType() << std::endl;
+    }
+  }
+  std::cout << "END ET SUM CHECK" << std::endl;
+
 
   iEvent.emplace(m_towerMPToken, std::move(outTowers));
   iEvent.emplace(m_clusterMPToken, std::move(clusters));
