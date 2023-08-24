@@ -275,6 +275,36 @@ const bool l1t::EnergySumCondition::evaluateCondition(const int bxEval) const {
     }
   }
   else if (type == l1t::EtSum::EtSumType::kZDCP || type == l1t::EtSum::EtSumType::kZDCM) {
+    unsigned int candZDCEsum = 200;
+    unsigned int candZDCPEsum = 0;
+    unsigned int candZDCMEsum = 0;
+    int numberObjects = candVec->size(useBx);
+    for (int iEtSum = 0; iEtSum < numberObjects; ++iEtSum) {
+      l1t::EtSum candZDC = *(candVec->at(useBx, iEtSum));
+
+      if(type == l1t::EtSum::EtSumType::kZDCP){
+        candZDCPEsum = candZDC.hwPt();
+      }
+      else if(type == l1t::EtSum::EtSumType::kZDCM) candZDCMEsum = candZDC.hwPt();
+    }
+    std::cout << "--------------------> EF src/EnergySumCondition.cc = EtSumType is ZDC!"
+      //<< "\n candZDCEsum = " << candZDCEsum                                                           
+              << "\n candZDCPEsum = " << candZDCPEsum
+              << "\n candZDCMEsum = " << candZDCMEsum
+              << "\n objPar.etLowThreshold = " << objPar.etLowThreshold
+              << "\n  objPar.etHighThreshold = " << objPar.etHighThreshold
+              << std::endl;
+
+    //if (candZDC.sumZDCPType == kZDCP){checkThreshold(objPar.etLowThreshold, objPar.etHighThreshold, candZDCPEsum, condGEqVal);}                                                                             
+    //else if (candZDC.sumZDCMType == kZDCM){checkThreshold(objPar.etLowThreshold, objPar.etHighThreshold, candZDCMEsum, condGEqVal);}                                                                      
+ 
+    //else{                                                                                             
+    bool myres = checkThreshold(objPar.etLowThreshold, objPar.etHighThreshold, candZDCEsum, condGEqVal);
+    if (!myres) {
+      std::cout << "\t\t l1t::EtSum failed ZDC checkThreshold" << std::endl;
+      return false;
+    }
+    
     return false;
   } else {
     // check energy threshold

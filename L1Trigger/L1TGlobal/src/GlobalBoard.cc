@@ -338,7 +338,10 @@ void l1t::GlobalBoard::receiveCaloObjectData(const edm::Event& iEvent,
           continue;
 	
         for (std::vector<l1t::EtSum>::const_iterator etsum = etSumData->begin(i); etsum != etSumData->end(i); ++etsum) {
-          (*m_candL1ZdcEtSum).push_back(i, &(*etsum));
+
+	  std::cout << "ET SUM PUSH BACK: " << (*etsum).et() << ", " << (*etsum).getType() << std::endl;
+          (*m_candL1EtSum).push_back(i, &(*etsum));
+	  //          (*m_candL1ZdcEtSum).push_back(i, &(*etsum));
         }
       }    //end loop over Bx
     }
