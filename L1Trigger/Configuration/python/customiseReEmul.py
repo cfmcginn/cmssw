@@ -229,6 +229,23 @@ def L1TReEmulFromRAW(process):
     print("# {0}".format(process.schedule))
     return process
 
+def L1TReEmulFromRAWZdc(process):
+    L1TReEmulFromRAW(process)
+    process.zdcEtSumProducer = cms.EDProducer('L1TZDCProducer',
+                                              zdcToken = cms.InputTag("hcalDigis", "ZDC"),
+                                              doHardCodeLUT = cms.bool(False)
+                                          )
+    process.L1TReEmulZdc = cms.Sequence( process.L1TReEmul + process.zdcEtSumProducer)
+    process.L1TReEmulZdcPath = cms.Path(process.L1TReEmulZdc)    
+    #process.zdcEtSum = cms.Path(process.zdcEtSumProducer)
+    process.schedule.append(process.L1TReEmulZdcPath)
+    #stage2L1Trigger.toModify(process.simCaloStage2Layer1Digis, hcalToken = 'simHcalTriggerPrimitiveDigis')
+
+    print("# L1TReEmul sequence for ZDC:  ")
+    print("# {0}".format(process.L1TReEmulZdc))
+    print("# {0}".format(process.schedule))
+    return process
+
 def L1TReEmulFromRAWCalouGT(process):
     L1TReEmulFromRAW(process)
     process.simGtStage2Digis.MuonInputTag   = cms.InputTag("gtStage2Digis","Muon")
