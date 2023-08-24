@@ -76,6 +76,10 @@ private:
   const edm::EDGetTokenT<l1t::EtSumBxCollection> sumToken_;
   const edm::EDGetTokenT<l1t::MuonBxCollection> muonToken_;
   const edm::EDGetTokenT<l1t::MuonShowerBxCollection> muonShowerToken_;
+
+  const edm::EDGetTokenT<l1t::EtSumBxCollection> sumZDCToken_;
+  //  const edm::EDGetTokenT<l1t::EtSumBxCollection> sumZDCMToken_;
+
   std::vector<edm::EDGetTokenT<l1t::TauBxCollection>> tauTokens_;
 };
 
@@ -84,13 +88,15 @@ L1UpgradeTreeProducer::L1UpgradeTreeProducer(const edm::ParameterSet& iConfig)
       jetToken_(consumes<l1t::JetBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("jetToken"))),
       sumToken_(consumes<l1t::EtSumBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("sumToken"))),
       muonToken_(consumes<l1t::MuonBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("muonToken"))),
-      muonShowerToken_(
-          consumes<l1t::MuonShowerBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("muonShowerToken"))) {
+      muonShowerToken_(consumes<l1t::MuonShowerBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("muonShowerToken"))),
+  sumZDCToken_(consumes<l1t::EtSumBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("sumZDCToken")))
+//      sumZDCMToken_(consumes<l1t::EtSumBxCollection>(iConfig.getUntrackedParameter<edm::InputTag>("sumZDCMToken")))
+{
   const auto& taus = iConfig.getUntrackedParameter<std::vector<edm::InputTag>>("tauTokens");
   for (const auto& tau : taus) {
     tauTokens_.push_back(consumes<l1t::TauBxCollection>(tau));
   }
-
+  
   maxL1Upgrade_ = iConfig.getParameter<unsigned int>("maxL1Upgrade");
 
   l1Upgrade = new L1Analysis::L1AnalysisL1Upgrade();
@@ -116,12 +122,16 @@ void L1UpgradeTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSe
   edm::Handle<l1t::EtSumBxCollection> sums;
   edm::Handle<l1t::MuonBxCollection> muon;
   edm::Handle<l1t::MuonShowerBxCollection> muonShower;
+  edm::Handle<l1t::EtSumBxCollection> sumsZDC;
+  //  edm::Handle<l1t::EtSumBxCollection> sumsZDCM;
 
   iEvent.getByToken(egToken_, eg);
   iEvent.getByToken(jetToken_, jet);
   iEvent.getByToken(sumToken_, sums);
   iEvent.getByToken(muonToken_, muon);
   iEvent.getByToken(muonShowerToken_, muonShower);
+  iEvent.getByToken(sumZDCToken_, sumsZDC);
+  //  iEvent.getByToken(sumZDCMToken_, sumsZDCM);
 
   if (eg.isValid()) {
     l1Upgrade->SetEm(eg, maxL1Upgrade_);
@@ -151,6 +161,20 @@ void L1UpgradeTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSe
   } else {
     edm::LogWarning("MissingProduct") << "L1Upgrade Muon Showers not found. Branch will not be filled" << std::endl;
   }
+
+  if (sumsZDC.isValid()) {
+    l1Upgrade->SetSumZDC(sumsZDC, maxL1Upgrade_);
+  } else {
+    edm::LogWarning("MissingProduct") << "L1Upgrade EtZDCSums not found. Branch will not be filled" << std::endl;
+  }
+
+  /*
+  if (sumsZDCM.isValid()) {
+    l1Upgrade->SetSumZDCM(sumsZDCM, maxL1Upgrade_);
+  } else {
+    edm::LogWarning("MissingProduct") << "L1Upgrade EtZDCMSums not found. Branch will not be filled" << std::endl;
+  }
+  */
 
   for (auto& tautoken : tauTokens_) {
     edm::Handle<l1t::TauBxCollection> tau;

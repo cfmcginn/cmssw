@@ -40,8 +40,11 @@ namespace L1Analysis {
     kAsymEt,
     kAsymHt,
     kAsymEtHF,
-    kAsymHtHF
+    kAsymHtHF,
+    kZDCP,
+    kZDCM
   };
+  //CM comment: Added kZDCP and kZDCM to above but also am gonna directly add zdcEtSums for now as it seems the fastest way to get it into the ttree
 
   struct L1AnalysisL1UpgradeDataFormat {
     L1AnalysisL1UpgradeDataFormat() { Reset(); };
@@ -140,6 +143,25 @@ namespace L1Analysis {
       sumIEt.clear();
       sumIPhi.clear();
       sumBx.clear();
+
+      //CM: Adding additional sum collections - silly but the way to go here for quick turnaround
+      nSumsZDC = 0;
+      sumZDCType.clear();
+      sumZDCEt.clear();
+      sumZDCPhi.clear();
+      sumZDCIEt.clear();
+      sumZDCIPhi.clear();
+      sumZDCBx.clear();
+
+      /*
+      nSumsZDCM = 0;
+      sumZDCMType.clear();
+      sumZDCMEt.clear();
+      sumZDCMPhi.clear();
+      sumZDCMIEt.clear();
+      sumZDCMIPhi.clear();
+      sumZDCMBx.clear();
+      */
     }
 
     unsigned short int nEGs;
@@ -234,6 +256,24 @@ namespace L1Analysis {
     std::vector<short int> sumIEt;
     std::vector<short int> sumIPhi;
     std::vector<float> sumBx;
+
+    unsigned short int nSumsZDC;
+    std::vector<short int> sumZDCType;
+    std::vector<float> sumZDCEt;
+    std::vector<float> sumZDCPhi;
+    std::vector<short int> sumZDCIEt;
+    std::vector<short int> sumZDCIPhi;
+    std::vector<float> sumZDCBx;
+
+    /*
+    unsigned short int nSumsZDCM;
+    std::vector<short int> sumZDCMType;
+    std::vector<float> sumZDCMEt;
+    std::vector<float> sumZDCMPhi;
+    std::vector<short int> sumZDCMIEt;
+    std::vector<short int> sumZDCMIPhi;
+    std::vector<float> sumZDCMBx;
+    */
   };
 }  // namespace L1Analysis
 #endif
