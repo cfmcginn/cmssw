@@ -141,9 +141,10 @@ caloParams = cms.ESProducer(
     centralityRegionMask = cms.int32(0),
     minimumBiasThresholds = cms.vint32(0, 0, 0, 0),
     centralityLUTFile = cms.FileInPath("L1Trigger/L1TCalorimeter/data/centralityLUT_stage1.txt"),
-    q2LUTFile         = cms.FileInPath("L1Trigger/L1TCalorimeter/data/q2LUT_stage1.txt"),
-    zdcLUTFile        = cms.FileInPath("L1Trigger/L1TZDC/data/zdcLUT_HI_v0_1.txt"),
-    
+#    q2LUTFile         = cms.FileInPath("L1Trigger/L1TCalorimeter/data/q2LUT_stage1.txt"),
+    zdcLUTFile        = cms.FileInPath("L1Trigger/L1TZDC/data/Run3Sept2023_HI_v2.txt"),
+    q2LUTFile        = cms.FileInPath("L1Trigger/L1TZDC/data/Run3Sept2023_HI_v2_JustOOTPU.txt"),
+   
     # HCal FB LUT
     layer1HCalFBLUTUpper = cms.vuint32([
     0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 0xBBBABBBA, 

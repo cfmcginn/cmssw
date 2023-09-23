@@ -181,6 +181,21 @@ void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
         cEMP = ((double)params_->zdcLUT()->data(cEMP_LUTIndex)) / ((double)scaleFactor_);
         cEMM = ((double)params_->zdcLUT()->data(cEMM_LUTIndex)) / ((double)scaleFactor_);
 
+	if(ibx > 0){
+	  unsigned short EMPToSub = rawadc[idet + 9][ibx-1];
+	  unsigned short EMMToSub = rawadc[idet][ibx-1];
+
+	  int cEMP_LUTIndexToSub = zdcLUTIndexHelper(idet + 9, (int)EMPToSub);
+	  int cEMM_LUTIndexToSub = zdcLUTIndexHelper(idet, (int)EMMToSub);
+
+	 
+	  cEMP -= ((double)params_->q2LUT()->data(cEMP_LUTIndexToSub)) / ((double)scaleFactor_);
+	  cEMM -= ((double)params_->q2LUT()->data(cEMM_LUTIndexToSub)) / ((double)scaleFactor_);
+
+	  if(cEMP < 0) cEMP = 0;
+	  if(cEMM < 0) cEMM = 0;
+	}
+
         sumcEMP = sumcEMP + cEMP;
         sumcEMM = sumcEMM + cEMM;
       }
@@ -194,6 +209,22 @@ void L1TZDCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
         cHDP = ((double)params_->zdcLUT()->data(cHDP_LUTIndex)) / ((double)scaleFactor_);
         cHDM = ((double)params_->zdcLUT()->data(cHDM_LUTIndex)) / ((double)scaleFactor_);
+
+
+	if(ibx > 0){
+	  unsigned short HDPToSub = rawadc[idet + 9][ibx-1];
+	  unsigned short HDMToSub = rawadc[idet][ibx-1];
+
+	  int cHDP_LUTIndexToSub = zdcLUTIndexHelper(idet + 9, (int)HDPToSub);
+	  int cHDM_LUTIndexToSub = zdcLUTIndexHelper(idet, (int)HDMToSub);
+
+	 
+	  cHDP -= ((double)params_->q2LUT()->data(cHDP_LUTIndexToSub)) / ((double)scaleFactor_);
+	  cHDM -= ((double)params_->q2LUT()->data(cHDM_LUTIndexToSub)) / ((double)scaleFactor_);
+
+	  if(cHDP < 0) cHDP = 0;
+	  if(cHDM < 0) cHDM = 0;
+	}
 
         sumcHDP = sumcHDP + cHDP;
         sumcHDM = sumcHDM + cHDM;
