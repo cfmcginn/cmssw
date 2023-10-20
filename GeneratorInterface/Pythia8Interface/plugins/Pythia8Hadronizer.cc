@@ -17,9 +17,8 @@ using namespace Pythia8;
 
 #include "GeneratorInterface/Pythia8Interface/interface/Py8InterfaceBase.h"
 
-#include "ReweightUserHooks.h"
+#include "GeneratorInterface/Pythia8Interface/plugins/ReweightUserHooks.h"
 #include "GeneratorInterface/Pythia8Interface/interface/CustomHook.h"
-#include "TopRecoilHook.h"
 
 // PS matchning prototype
 //
@@ -76,6 +75,36 @@ namespace CLHEP {
 
 using namespace gen;
 
+class Nucleus2gamma2 : public Pythia8::PDF {
+
+public:
+
+  // Constructor.                                                                            
+  Nucleus2gamma2(int idBeamIn) : Pythia8::PDF(idBeamIn) {}
+
+  // Update the photon flux.                                                                 
+  void xfUpdate(int , double x, double ) {
+
+    // Minimum impact parameter (~2*radius) [fm].                                            
+    double bmin = 2 * 6.636;
+
+    // Charge of the nucleus.                                                                
+    double z = 82.;
+
+    // Per-nucleon mass for lead.                                                            
+    double m2 = pow2(0.9314);
+    double alphaEM = 0.007297353080;
+    double hbarc = 0.197;
+    double xi = x * sqrt(m2) * bmin / hbarc;
+    double bK0 = besselK0(xi);
+    double bK1 = besselK1(xi);
+    double intB = xi * bK1 * bK0 - 0.5 * pow2(xi) * ( pow2(bK1) - pow2(bK0) );
+    xgamma = 2. * alphaEM * pow2(z) / M_PI * intB;
+  }
+
+};
+
+
 class Pythia8Hadronizer : public Py8InterfaceBase {
 public:
   Pythia8Hadronizer(const edm::ParameterSet &params);
@@ -112,6 +141,11 @@ private:
 
   double fBeam1PZ;
   double fBeam2PZ;
+
+  //PDFPtr for the photonFlux
+  //Following main70.cc example in PYTHIA3.10
+  bool doProtonPhotonFlux;
+  Pythia8::PDFPtr photonFlux = 0;
 
   //helper class to allow multiple user hooks simultaneously
   std::shared_ptr<UserHooksVector> fUserHooksVector;
@@ -151,9 +185,6 @@ private:
   //Generic customized hooks vector
   std::shared_ptr<UserHooksVector> fCustomHooksVector;
 
-  //RecoilToTop userhook
-  std::shared_ptr<TopRecoilHook> fTopRecoilHook;
-
   int EV1_nFinal;
   bool EV1_vetoOn;
   int EV1_maxVetoCount;
@@ -182,14 +213,16 @@ Pythia8Hadronizer::Pythia8Hadronizer(const edm::ParameterSet &params)
       comEnergy(params.getParameter<double>("comEnergy")),
       LHEInputFileName(params.getUntrackedParameter<std::string>("LHEInputFileName", "")),
       fInitialState(PP),
+      doProtonPhotonFlux(params.getParameter<bool>("doProtonPhotonFlux")),
       UserHooksSet(false),
       nME(-1),
       nMEFiltered(-1),
       nISRveto(0),
-      nFSRveto(0) {
+      nFSRveto(0){
   ivhepmc = 2;
   // J.Y.: the following 3 parameters are hacked "for a reason"
   //
+
   if (params.exists("PPbarInitialState")) {
     if (fInitialState == PP) {
       fInitialState = PPbar;
@@ -368,6 +401,11 @@ bool Pythia8Hadronizer::initializeForInternalPartons() {
     fMasterGen->settings.mode("Beams:frameType", 4);
     fMasterGen->settings.word("Beams:LHEF", lheFile_);
   }
+  
+  if (doProtonPhotonFlux) {
+    photonFlux = make_shared<Nucleus2gamma2>(2212);
+    //    fMasterGen->setPhotonFluxPtr(photonFlux, 0);
+  }
 
   if (!fUserHooksVector.get())
     fUserHooksVector.reset(new UserHooksVector);
@@ -415,14 +453,6 @@ bool Pythia8Hadronizer::initializeForInternalPartons() {
     if (!fPowhegHooksBB4L.get())
       fPowhegHooksBB4L.reset(new PowhegHooksBB4L());
     (fUserHooksVector->hooks).push_back(fPowhegHooksBB4L);
-  }
-
-  bool TopRecoilHook1 = fMasterGen->settings.flag("TopRecoilHook:doTopRecoilIn");
-  if (TopRecoilHook1) {
-    edm::LogInfo("Pythia8Interface") << "Turning on RecoilToTop hook from Pythia8Interface";
-    if (!fTopRecoilHook.get())
-      fTopRecoilHook.reset(new TopRecoilHook());
-    (fUserHooksVector->hooks).push_back(fTopRecoilHook);
   }
 
   //adapted from main89.cc in pythia8 examples
@@ -582,14 +612,6 @@ bool Pythia8Hadronizer::initializeForExternalPartons() {
     if (!fPowhegHooksBB4L.get())
       fPowhegHooksBB4L.reset(new PowhegHooksBB4L());
     (fUserHooksVector->hooks).push_back(fPowhegHooksBB4L);
-  }
-
-  bool TopRecoilHook1 = fMasterGen->settings.flag("TopRecoilHook:doTopRecoilIn");
-  if (TopRecoilHook1) {
-    edm::LogInfo("Pythia8Interface") << "Turning on RecoilToTop hook from Pythia8Interface";
-    if (!fTopRecoilHook.get())
-      fTopRecoilHook.reset(new TopRecoilHook());
-    (fUserHooksVector->hooks).push_back(fTopRecoilHook);
   }
 
   //adapted from main89.cc in pythia8 examples
