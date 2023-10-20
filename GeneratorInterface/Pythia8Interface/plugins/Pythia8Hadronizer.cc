@@ -404,7 +404,7 @@ bool Pythia8Hadronizer::initializeForInternalPartons() {
   
   if (doProtonPhotonFlux) {
     photonFlux = make_shared<Nucleus2gamma2>(2212);
-    //    fMasterGen->setPhotonFluxPtr(photonFlux, 0);
+    fMasterGen->setPhotonFluxPtr(photonFlux, 0);
   }
 
   if (!fUserHooksVector.get())

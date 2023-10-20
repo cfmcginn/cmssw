@@ -42,7 +42,7 @@ process.generator = cms.EDFilter("Pythia8GeneratorFilter",
                                         'MultipartonInteractions:pT0Ref = 3.0',#Added from main70
                                         'PDF:beamA2gamma = on',#Added from main70
                                         #This option below crashes - debug
-#                                        'PDF:proton2gammaSet = 0',#Added from main70
+                                        'PDF:proton2gammaSet = 0',#Added from main70
                                         'PDF:useHardNPDFB = on',
                                         'PDF:gammaFluxApprox2bMin = 13.272',
                                         'PDF:beam2gammaApprox = 2',
