@@ -16,6 +16,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
+#include "DataFormats/TrackerCommon/interface/ClusterSummary.h"
 #include "DataFormats/HeavyIonEvent/interface/Centrality.h"
 #include "DataFormats/HeavyIonEvent/interface/EvtPlane.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -56,18 +57,22 @@ private:
 
   edm::EDGetTokenT<pat::PackedCandidateCollection> pfCandidateTag_;
 
-  edm::EDGetTokenT<reco::EvtPlaneCollection> EvtPlaneTag_;
-  edm::EDGetTokenT<reco::EvtPlaneCollection> EvtPlaneFlatTag_;
+  //  edm::EDGetTokenT<reco::EvtPlaneCollection> EvtPlaneTag_;
+  //  edm::EDGetTokenT<reco::EvtPlaneCollection> EvtPlaneFlatTag_;
 
   edm::EDGetTokenT<edm::GenHIEvent> HiMCTag_;
   edm::EDGetTokenT<std::vector<reco::Vertex>> VertexTag_;
 
-  edm::EDGetTokenT<reco::HFFilterInfo> HFfilters_;
+  //  edm::EDGetTokenT<reco::HFFilterInfo> HFfilters_;
 
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> puInfoToken_;
   edm::EDGetTokenT<GenEventInfoProduct> genInfoToken_;
   edm::EDGetTokenT<LHEEventProduct> generatorlheToken_;
 
+  //Adding in cluster summary
+  edm::EDGetTokenT<ClusterSummary> clusterTag_;
+
+  bool doClusters_;
   bool doEvtPlane_;
   bool doEvtPlaneFlat_;
   bool doCentrality_;
@@ -88,6 +93,7 @@ private:
   int nEvtPlanes;
   int HltEvtCnt;
   int hiBin;
+  int nPixClusters, nStripClusters;
   int hiNpix, hiNpixelTracks, hiNtracks, hiNtracksPtCut, hiNtracksEtaCut, hiNtracksEtaPtCut;
   int hiNpixPlus, hiNpixMinus, hiNpixelTracksPlus, hiNpixelTracksMinus;
   float hiHF, hiHFplus, hiHFminus, hiHFplusEta4, hiHFminusEta4, hiHFhit, hiHFhitPlus, hiHFhitMinus;
@@ -152,26 +158,28 @@ private:
 // constructors and destructor
 //
 HiEvtAnalyzer::HiEvtAnalyzer(const edm::ParameterSet& iConfig)
-    : CentralityTag_(consumes<reco::Centrality>(iConfig.getParameter<edm::InputTag>("CentralitySrc"))),
-      CentralityBinTag_(consumes<int>(iConfig.getParameter<edm::InputTag>("CentralityBinSrc"))),
+  : //CentralityTag_(consumes<reco::Centrality>(iConfig.getParameter<edm::InputTag>("CentralitySrc"))),
+  //      CentralityBinTag_(consumes<int>(iConfig.getParameter<edm::InputTag>("CentralityBinSrc"))),
       pfCandidateTag_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("pfCandidateSrc"))),
-      EvtPlaneTag_(consumes<reco::EvtPlaneCollection>(iConfig.getParameter<edm::InputTag>("EvtPlane"))),
-      EvtPlaneFlatTag_(consumes<reco::EvtPlaneCollection>(iConfig.getParameter<edm::InputTag>("EvtPlaneFlat"))),
-      HiMCTag_(consumes<edm::GenHIEvent>(iConfig.getParameter<edm::InputTag>("HiMC"))),
-      VertexTag_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("Vertex"))),
-      HFfilters_(consumes<reco::HFFilterInfo>(iConfig.getParameter<edm::InputTag>("HFfilters"))),
-      puInfoToken_(consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("addPileupInfo"))),
-      genInfoToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator"))),
-      generatorlheToken_(consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer", ""))),
-      doEvtPlane_(iConfig.getParameter<bool>("doEvtPlane")),
-      doEvtPlaneFlat_(iConfig.getParameter<bool>("doEvtPlaneFlat")),
-      doCentrality_(iConfig.getParameter<bool>("doCentrality")),
-      doMC_(iConfig.getParameter<bool>("doMC")),
-      doHiMC_(iConfig.getParameter<bool>("doHiMC")),
-      doHFfilters_(iConfig.getParameter<bool>("doHFfilters")),
-      useHepMC_(iConfig.getParameter<bool>("useHepMC")),
-      doVertex_(iConfig.getParameter<bool>("doVertex")),
-      evtPlaneLevel_(iConfig.getParameter<int>("evtPlaneLevel")) {}
+      //      EvtPlaneTag_(consumes<reco::EvtPlaneCollection>(iConfig.getParameter<edm::InputTag>("EvtPlane"))),
+      //      EvtPlaneFlatTag_(consumes<reco::EvtPlaneCollection>(iConfig.getParameter<edm::InputTag>("EvtPlaneFlat"))),
+  HiMCTag_(consumes<edm::GenHIEvent>(iConfig.getParameter<edm::InputTag>("HiMC"))),
+  VertexTag_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("Vertex"))),
+//  HFfilters_(consumes<reco::HFFilterInfo>(iConfig.getParameter<edm::InputTag>("HFfilters"))),
+  puInfoToken_(consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("addPileupInfo"))),
+  genInfoToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator"))),
+  generatorlheToken_(consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer", ""))),
+  clusterTag_(consumes<ClusterSummary>(iConfig.getParameter<edm::InputTag>("clusterSummary"))),
+  doClusters_(iConfig.getParameter<bool>("doClusters")),
+  doEvtPlane_(iConfig.getParameter<bool>("doEvtPlane")),
+  doEvtPlaneFlat_(iConfig.getParameter<bool>("doEvtPlaneFlat")),
+  doCentrality_(iConfig.getParameter<bool>("doCentrality")),
+  doMC_(iConfig.getParameter<bool>("doMC")),
+  doHiMC_(iConfig.getParameter<bool>("doHiMC")),
+  doHFfilters_(iConfig.getParameter<bool>("doHFfilters")),
+  useHepMC_(iConfig.getParameter<bool>("useHepMC")),
+  doVertex_(iConfig.getParameter<bool>("doVertex")),
+  evtPlaneLevel_(iConfig.getParameter<int>("evtPlaneLevel")) {}
 
 HiEvtAnalyzer::~HiEvtAnalyzer() {
   // do anything here that needs to be done at desctruction time
@@ -273,13 +281,23 @@ void HiEvtAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
+  if(doClusters_){
+    edm::Handle<ClusterSummary> clusterSummary_;
+    iEvent.getByToken(clusterTag_, clusterSummary_);
+
+    //Cut is on pixelClusters
+    nPixClusters = clusterSummary_->getNClus(ClusterSummary::CMSTracker::PIXEL);
+    nStripClusters = clusterSummary_->getNClus(ClusterSummary::CMSTracker::STRIP);
+  }
+
+
   if (doCentrality_) {
     edm::Handle<int> cbin_;
-    iEvent.getByToken(CentralityBinTag_, cbin_);
+    //    iEvent.getByToken(CentralityBinTag_, cbin_);
     hiBin = *cbin_;
 
     edm::Handle<reco::Centrality> centrality;
-    iEvent.getByToken(CentralityTag_, centrality);
+    //    iEvent.getByToken(CentralityTag_, centrality);
 
     hiNpix = centrality->multiplicityPixel();
     hiNpixPlus = centrality->multiplicityPixelPlus();
@@ -362,7 +380,7 @@ void HiEvtAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<reco::EvtPlaneCollection> evtPlanes;
 
   if (doEvtPlane_) {
-    iEvent.getByToken(EvtPlaneTag_, evtPlanes);
+    //    iEvent.getByToken(EvtPlaneTag_, evtPlanes);
     if (evtPlanes.isValid()) {
       nEvtPlanes += evtPlanes->size();
       for (unsigned int i = 0; i < evtPlanes->size(); ++i) {
@@ -372,7 +390,7 @@ void HiEvtAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
 
   if (doEvtPlaneFlat_) {
-    iEvent.getByToken(EvtPlaneFlatTag_, evtPlanes);
+    //    iEvent.getByToken(EvtPlaneFlatTag_, evtPlanes);
     if (evtPlanes.isValid()) {
       for (unsigned int i = 0; i < evtPlanes->size(); ++i) {
         hiEvtPlane[nEvtPlanes + i] = (*evtPlanes)[i].angle();
@@ -389,8 +407,9 @@ void HiEvtAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     vz = vertex->begin()->z();
   }
 
-  // Option to disable HF filters for ppref
+  // Option to disable HF filters for ppref  
   if(doHFfilters_){
+    /*
     edm::Handle<reco::HFFilterInfo> HFfilter;
     iEvent.getByToken(HFfilters_, HFfilter);
 
@@ -398,6 +417,11 @@ void HiEvtAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     numMinHFTower3 = HFfilter->numMinHFTowers3;
     numMinHFTower4 = HFfilter->numMinHFTowers4;
     numMinHFTower5 = HFfilter->numMinHFTowers5;
+    */
+    numMinHFTower2 = 0;
+    numMinHFTower3 = 0;
+    numMinHFTower4 = 0;
+    numMinHFTower5 = 0;
   } else {
     numMinHFTower2 = 0;
     numMinHFTower3 = 0;
@@ -510,6 +534,9 @@ void HiEvtAnalyzer::beginJob() {
   thi_->Branch("hiHFhit", &hiHFhit, "hiHFhit/F");
   thi_->Branch("hiHFhitPlus", &hiHFhitPlus, "hiHFhitPlus/F");
   thi_->Branch("hiHFhitMinus", &hiHFhitMinus, "hiHFhitMinus/F");
+
+  thi_->Branch("nPixClusters", &nPixClusters, "nPixClusters/I");
+  thi_->Branch("nStripClusters", &nStripClusters, "nStripClusters/I");
 
   thi_->Branch("hiET", &hiET, "hiET/F");
   thi_->Branch("hiEE", &hiEE, "hiEE/F");
