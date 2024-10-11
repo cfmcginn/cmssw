@@ -33,7 +33,7 @@ if 'unitTest=True' in sys.argv:
 from DQM.Integration.config.online_customizations_cfi import *
 if useOfflineGT:
 	process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-	process.GlobalTag.globaltag = autoCond['run3_data_prompt'] 
+	process.GlobalTag.globaltag = '141X_dataRun3_Prompt_Candidate_2024_10_08_09_42_50'
 else:
 	process.load('DQM.Integration.config.FrontierCondition_GT_cfi')
 if unitTest:
@@ -57,10 +57,12 @@ process.dqmSaverPB.tag = subsystem
 process.dqmSaverPB.runNumber = options.runNumber
 process = customise(process)
 process.DQMStore.verbose = 0
+
+'''
 if not unitTest and not useFileInput :
   if not options.BeamSplashRun :
     process.source.minEventsPerLumi = 100
-
+'''
 #-------------------------------------
 #	CMSSW/Hcal non-DQM Related Module import
 #-------------------------------------
@@ -105,6 +107,13 @@ process.emulTPDigis = process.simHcalTriggerPrimitiveDigis.clone(
    # Enable ZS on emulated TPs, to match what is done in data
    RunZS = True,
    ZS_threshold = 0
+)
+
+#inserting zdc emulator after tp digis
+process.etSumZdcProducer = cms.EDProducer('L1TZDCProducer',
+                                          hcalTPDigis = cms.InputTag("emulTPDigis"),
+                                          bxFirst = cms.int32(-2),
+                                          bxLast = cms.int32(3)
 )
 
 process.hcalDigis.InputLabel = rawTag
@@ -192,6 +201,7 @@ process.tasksPath = cms.Path(
 		+process.fcdTask
 		#+process.qie11Task
 		#ZDC to be removed after 2018 PbPb run
+        +process.etSumZdcProducer
 		+process.zdcQIE10Task
 		+process.hcalMLTask
 )

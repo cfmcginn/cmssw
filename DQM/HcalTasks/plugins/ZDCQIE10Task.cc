@@ -383,21 +383,25 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
   longRecoParams_->setTopo(&htopo);
 
   int bx = e.bunchCrossing();
-
+  
   edm::Handle<BXVector<l1t::EtSum> > sums;
   e.getByToken(sumToken_, sums);
 
   int startBX = sums->getFirstBX();
-
   for (int ibx = startBX; ibx <= sums->getLastBX(); ++ibx) {
     for (auto itr = sums->begin(ibx); itr != sums->end(ibx); ++itr) {
-      if (itr->getType() == l1t::EtSum::EtSumType::kZDCP)
-        etSumZdcP_[ibx - startBX] = itr->hwPt();
-      if (itr->getType() == l1t::EtSum::EtSumType::kZDCM)
-        etSumZdcM_[ibx - startBX] = itr->hwPt();
+      l1t::EtSum::EtSumType type = itr->getType();
+
+      if (type == l1t::EtSum::EtSumType::kZDCP)
+	_cZDC_BX_EmuSUMS[1]->Fill(ibx - startBX, itr->hwPt());
+      //        etSumZdcP_[ibx - startBX] = itr->hwPt();
+      if (type == l1t::EtSum::EtSumType::kZDCM)
+	_cZDC_BX_EmuSUMS[0]->Fill(ibx - startBX, itr->hwPt());
+      //        etSumZdcM_[ibx - startBX] = itr->hwPt();
     }
   }
-
+  
+  
   edm::Handle<QIE10DigiCollection> digis;
   if (!e.getByToken(_tokQIE10, digis))
     edm::LogError("Collection QIE10DigiCollection for ZDC isn't available" + _tagQIE10.label() + " " +
@@ -411,7 +415,8 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
 
     HcalZDCDetId const& did = digi.detid();
 
-    HcalZDCDetId cell = it->id();
+    //Temp comment out for build C McGinn
+    //    HcalZDCDetId cell = it->id();
 
     uint32_t rawid = _ehashmap.lookup(did);
 
