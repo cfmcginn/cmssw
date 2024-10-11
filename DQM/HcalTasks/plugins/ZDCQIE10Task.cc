@@ -204,7 +204,6 @@ ZDCQIE10Task::ZDCQIE10Task(edm::ParameterSet const& ps)
   for (int channel = 1; channel < 6; channel++) {
     // EM Pos
     HcalZDCDetId didp(HcalZDCDetId::EM, true, channel);
-    // cout << " ZDC EM P eid " <<didp()<< " ch "<<channel<<endl;
 
     histoname = "EM_P_" + std::to_string(channel);
     ib.setCurrentFolder("Hcal/ZDCQIE10Task/ADC_perChannel");
@@ -383,9 +382,6 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
   longRecoParams_ = std::make_unique<HcalLongRecoParams>(p);
   longRecoParams_->setTopo(&htopo);
 
-  std::vector<unsigned int> mySignalTS;
-  std::vector<unsigned int> myNoiseTS;
-
   int bx = e.bunchCrossing();
 
   edm::Handle<BXVector<l1t::EtSum> > sums;
@@ -421,7 +417,6 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
 
     if (rawid == 0) {
       continue;
-    } else {
     }
     HcalElectronicsId const& eid(rawid);
 
@@ -442,7 +437,6 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
     double sample[2][6] = {{0}};
 
     for (int i = 0; i < digi.samples(); i++) {
-      //cout << " zside()    " << did.zside() <<endl;
       // ZDC Plus
       if (did.zside() > 0) {
         _cADC_PM[1]->Fill(digi[i].adc());
