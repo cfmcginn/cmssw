@@ -383,25 +383,28 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
   longRecoParams_->setTopo(&htopo);
 
   int bx = e.bunchCrossing();
-  
+
   edm::Handle<BXVector<l1t::EtSum> > sums;
   e.getByToken(sumToken_, sums);
 
   int startBX = sums->getFirstBX();
+
   for (int ibx = startBX; ibx <= sums->getLastBX(); ++ibx) {
     for (auto itr = sums->begin(ibx); itr != sums->end(ibx); ++itr) {
       l1t::EtSum::EtSumType type = itr->getType();
 
-      if (type == l1t::EtSum::EtSumType::kZDCP)
-	_cZDC_BX_EmuSUMS[1]->Fill(ibx - startBX, itr->hwPt());
+      if (type == l1t::EtSum::EtSumType::kZDCP){
+	if(ibx == 0) _cZDC_BX_EmuSUMS[1]->Fill(bx, itr->hwPt());
+      }
       //        etSumZdcP_[ibx - startBX] = itr->hwPt();
-      if (type == l1t::EtSum::EtSumType::kZDCM)
-	_cZDC_BX_EmuSUMS[0]->Fill(ibx - startBX, itr->hwPt());
+      if (type == l1t::EtSum::EtSumType::kZDCM){
+	if(ibx == 0) _cZDC_BX_EmuSUMS[0]->Fill(bx, itr->hwPt());
+      }
       //        etSumZdcM_[ibx - startBX] = itr->hwPt();
     }
   }
-  
-  
+
+
   edm::Handle<QIE10DigiCollection> digis;
   if (!e.getByToken(_tokQIE10, digis))
     edm::LogError("Collection QIE10DigiCollection for ZDC isn't available" + _tagQIE10.label() + " " +
@@ -419,7 +422,6 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
     //    HcalZDCDetId cell = it->id();
 
     uint32_t rawid = _ehashmap.lookup(did);
-
     if (rawid == 0) {
       continue;
     }
@@ -480,9 +482,11 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
       }
       _cZDC_CapIDS[0]->Fill(digi[i].capid());
     }
+
     if (did.section() == 1) {
       if ((did.channel() > 0) && (did.channel() < 6)) {
-        EMM_sum += (sample_ZDCm_TS2 - sample_ZDCm_TS1);
+
+	EMM_sum += (sample_ZDCm_TS2 - sample_ZDCm_TS1);
         EMP_sum += (sample_ZDCp_TS2 - sample_ZDCp_TS1);
         for (int k = 0; k < 6; k++) {
           EMP_tot_sum += sample[1][k];
@@ -529,6 +533,7 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
       }
     }
   }
+
   // Hardcoded callibrations currently
   _cZDC_SUMS[0]->Fill(((EMM_sum * 0.1) + HADM_sum) * 0.5031);
   _cZDC_SUMS[1]->Fill(((EMP_sum * 0.12) + HADP_sum) * 0.9397);
