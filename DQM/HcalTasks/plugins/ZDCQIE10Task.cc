@@ -386,11 +386,9 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
       if (type == l1t::EtSum::EtSumType::kZDCP){
 	if(ibx == 0) _cZDC_BX_EmuSUMS[1]->Fill(bx, itr->hwPt());
       }
-      //        etSumZdcP_[ibx - startBX] = itr->hwPt();
       if (type == l1t::EtSum::EtSumType::kZDCM){
 	if(ibx == 0) _cZDC_BX_EmuSUMS[0]->Fill(bx, itr->hwPt());
       }
-      //        etSumZdcM_[ibx - startBX] = itr->hwPt();
     }
   }
 
