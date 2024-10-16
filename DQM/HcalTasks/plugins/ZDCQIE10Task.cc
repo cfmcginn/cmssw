@@ -115,13 +115,13 @@ ZDCQIE10Task::ZDCQIE10Task(edm::ParameterSet const& ps)
   ib.setCurrentFolder("Hcal/ZDCQIE10Task/Sums");
   _cZDC_BX_EmuSUMS[0] = ib.book1DD(histoname.c_str(), histoname.c_str(), 3500, 0, 3500);
   _cZDC_BX_EmuSUMS[0]->setAxisTitle("globalBX", 1);
-  _cZDC_BX_EmuSUMS[0]->setAxisTitle("GeV", 2);
+  _cZDC_BX_EmuSUMS[0]->setAxisTitle("0-255 weighted output", 2);
 
   histoname = "ZDCP_EmuSumBX";
   ib.setCurrentFolder("Hcal/ZDCQIE10Task/Sums");
   _cZDC_BX_EmuSUMS[1] = ib.book1DD(histoname.c_str(), histoname.c_str(), 3500, 0, 3500);
   _cZDC_BX_EmuSUMS[1]->setAxisTitle("globalBX", 1);
-  _cZDC_BX_EmuSUMS[1]->setAxisTitle("GeV", 2);
+  _cZDC_BX_EmuSUMS[1]->setAxisTitle("0-255 weighted output", 2);
 
   histoname = "CapIDs";
   ib.setCurrentFolder("Hcal/ZDCQIE10Task");
@@ -383,15 +383,16 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
     for (auto itr = sums->begin(ibx); itr != sums->end(ibx); ++itr) {
       l1t::EtSum::EtSumType type = itr->getType();
 
-      if (type == l1t::EtSum::EtSumType::kZDCP){
-	if(ibx == 0) _cZDC_BX_EmuSUMS[1]->Fill(bx, itr->hwPt());
+      if (type == l1t::EtSum::EtSumType::kZDCP) {
+        if (ibx == 0)
+          _cZDC_BX_EmuSUMS[1]->Fill(bx, itr->hwPt());
       }
-      if (type == l1t::EtSum::EtSumType::kZDCM){
-	if(ibx == 0) _cZDC_BX_EmuSUMS[0]->Fill(bx, itr->hwPt());
+      if (type == l1t::EtSum::EtSumType::kZDCM) {
+        if (ibx == 0)
+          _cZDC_BX_EmuSUMS[0]->Fill(bx, itr->hwPt());
       }
     }
   }
-
 
   edm::Handle<QIE10DigiCollection> digis;
   if (!e.getByToken(_tokQIE10, digis))
@@ -470,8 +471,7 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
 
     if (did.section() == 1) {
       if ((did.channel() > 0) && (did.channel() < 6)) {
-
-	EMM_sum += (sample_ZDCm_TS2 - sample_ZDCm_TS1);
+        EMM_sum += (sample_ZDCm_TS2 - sample_ZDCm_TS1);
         EMP_sum += (sample_ZDCp_TS2 - sample_ZDCp_TS1);
         for (int k = 0; k < 6; k++) {
           EMP_tot_sum += sample[1][k];
