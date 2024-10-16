@@ -202,7 +202,7 @@ process.tasksPath = cms.Path(
 		+process.fcdTask
 		#+process.qie11Task
 		#ZDC to be removed after 2018 PbPb run
-        +process.etSumZdcProducer
+		+process.etSumZdcProducer
 		+process.zdcQIE10Task
 		+process.hcalMLTask
 )

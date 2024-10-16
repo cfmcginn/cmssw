@@ -408,9 +408,6 @@ void ZDCQIE10Task::_process(edm::Event const& e, edm::EventSetup const& es) {
 
     HcalZDCDetId const& did = digi.detid();
 
-    //Temp comment out for build C McGinn
-    //    HcalZDCDetId cell = it->id();
-
     uint32_t rawid = _ehashmap.lookup(did);
     if (rawid == 0) {
       continue;
