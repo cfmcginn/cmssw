@@ -82,7 +82,6 @@ protected:
   std::map<uint32_t, MonitorElement *> _cZDC_SUMS;
   std::map<uint32_t, MonitorElement *> _cZDC_BXSUMS;
   std::map<uint32_t, MonitorElement *> _cZDC_BX_EmuSUMS;
-  std::map<uint32_t, MonitorElement *> _cZDC_SumComp;
   std::map<uint32_t, MonitorElement *> _cZDC_CapIDS;
   std::map<uint32_t, MonitorElement *> _cfC_EChannel;
   std::map<uint32_t, MonitorElement *> _cTDC_EChannel;

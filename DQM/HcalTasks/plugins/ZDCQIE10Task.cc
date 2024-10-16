@@ -123,16 +123,6 @@ ZDCQIE10Task::ZDCQIE10Task(edm::ParameterSet const& ps)
   _cZDC_BX_EmuSUMS[1]->setAxisTitle("globalBX", 1);
   _cZDC_BX_EmuSUMS[1]->setAxisTitle("GeV", 2);
 
-  histoname = "ZDCM_SumComp";
-  ib.setCurrentFolder("Hcal/ZDCQIE10Task/Sums");
-  _cZDC_SumComp[0] = ib.book1DD(histoname.c_str(), histoname.c_str(), 1, 0, 1);
-  _cZDC_SumComp[0]->setAxisTitle("N", 2);
-
-  histoname = "ZDCP_SumComp";
-  ib.setCurrentFolder("Hcal/ZDCQIE10Task/Sums");
-  _cZDC_SumComp[1] = ib.book1DD(histoname.c_str(), histoname.c_str(), 1, 0, 1);
-  _cZDC_SumComp[1]->setAxisTitle("N", 2);
-
   histoname = "CapIDs";
   ib.setCurrentFolder("Hcal/ZDCQIE10Task");
   _cZDC_CapIDS[0] = ib.book1DD(histoname.c_str(), histoname.c_str(), 4, 0, 4);
