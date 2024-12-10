@@ -26,7 +26,7 @@ process.source = cms.Source("PoolSource",
     duplicateCheckMode = cms.untracked.string("noDuplicateCheck"),
     fileNames = cms.untracked.vstring(
         'root://xrootd-cms.infn.it//store/hidata/HIRun2023A/HIPhysicsRawPrime25/MINIAOD/PromptReco-v2/000/375/259/00000/842ae3e0-1bfa-46d9-92d6-a3e8566638d8.root'
-    ), 
+    ),
 )
 
 # number of events to process, set to -1 to process all events
@@ -94,7 +94,7 @@ process.TFileService = cms.Service("TFileService",
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cfi')
 process.load('HeavyIonsAnalysis.EventAnalysis.skimanalysis_cfi')
-process.load('HeavyIonsAnalysis.EventAnalysis.hltobject_cfi')
+#process.load('HeavyIonsAnalysis.EventAnalysis.hltobject_cfi')
 process.load('HeavyIonsAnalysis.EventAnalysis.l1object_cfi')
 
 # No centrality binning for UPC
@@ -110,22 +110,25 @@ process.load('HeavyIonsAnalysis.EventAnalysis.particleFlowAnalyser_cfi')
 # electrons, photons, muons
 process.load('HeavyIonsAnalysis.EGMAnalysis.ggHiNtuplizer_cfi')
 process.ggHiNtuplizer.doMuons = cms.bool(False)
+process.ggHiNtuplizer.useValMapIso = cms.bool(False)
+process.ggHiNtuplizer.doGenParticles = cms.bool(False)
+
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 ################################
 # jet reco sequence
-process.load(
-    'HeavyIonsAnalysis.JetAnalysis.ak2PFJetSequence_ppref_data_cff')
-process.load(
-    'HeavyIonsAnalysis.JetAnalysis.ak3PFJetSequence_ppref_data_cff')
+#process.load(
+#    'HeavyIonsAnalysis.JetAnalysis.ak2PFJetSequence_ppref_data_cff')
+#process.load(
+#    'HeavyIonsAnalysis.JetAnalysis.ak3PFJetSequence_ppref_data_cff')
 process.load(
     'HeavyIonsAnalysis.JetAnalysis.ak4PFJetSequence_ppref_data_cff')
-process.load('HeavyIonsAnalysis.JetAnalysis.ak4CaloJetSequence_pp_data_cff')
+#process.load('HeavyIonsAnalysis.JetAnalysis.ak4CaloJetSequence_pp_data_cff')
 ################################
 # tracks
 process.load("HeavyIonsAnalysis.TrackAnalysis.TrackAnalyzers_cff")
 # muons (FTW)
-process.load("HeavyIonsAnalysis.MuonAnalysis.unpackedMuons_cfi")
-process.load("HeavyIonsAnalysis.MuonAnalysis.muonAnalyzer_cfi")
+#process.load("HeavyIonsAnalysis.MuonAnalysis.unpackedMuons_cfi")
+#process.load("HeavyIonsAnalysis.MuonAnalysis.muonAnalyzer_cfi")
 ###############################################################################
 
 #########################
@@ -142,15 +145,15 @@ process.forest = cms.Path(
     #process.centralityBin +
     process.hiEvtAnalyzer +
     process.hltanalysis +
-    process.hltobject +
+#    process.hltobject +
     process.l1object +
     process.trackSequencePP +
-    process.ak4CaloJetAnalyzer +
+#    process.ak4CaloJetAnalyzer +
     process.particleFlowAnalyser +
     process.ggHiNtuplizer +
-    process.zdcSequencePbPb +
-    process.unpackedMuons +
-    process.muonAnalyzer +
+    process.zdcSequencePbPb #+
+#    process.unpackedMuons +
+#    process.muonAnalyzer +
     #process.akPu4CaloJetAnalyzer
     )
 
@@ -159,9 +162,9 @@ process.forest = cms.Path(
 # Select the types of jets filled
 addR3Jets = False
 addR3FlowJets = False
-addR4Jets = True
-addR4FlowJets = True
-addUnsubtractedR4Jets = True
+addR4Jets = False
+addR4FlowJets = False
+addUnsubtractedR4Jets = False
 
 # Choose which additional information is added to jet trees
 doHIJetID = True             # Fill jet ID and composition information branches
@@ -245,6 +248,8 @@ if addCandidateTagging:
     process.akCs4PFJetAnalyzer.jetTag = "updatedPatJets"
 
     process.forest.insert(1,process.candidateBtagging*process.updatedPatJets)
+else:
+     process.forest+= process.ak4PFJetAnalyzer
 
 #########################
 # Event Selection -> add the needed filters here
@@ -253,14 +258,15 @@ if addCandidateTagging:
 process.load('HeavyIonsAnalysis.EventAnalysis.collisionEventSelection_cff')
 process.pclusterCompatibilityFilter = cms.Path(process.clusterCompatibilityFilter)
 process.pprimaryVertexFilter = cms.Path(process.primaryVertexFilter)
-process.load('HeavyIonsAnalysis.EventAnalysis.hffilter_cfi')
+
+#process.load('HeavyIonsAnalysis.EventAnalysis.hffilter_cfi')
 process.load('HeavyIonsAnalysis.EventAnalysis.hffilterPF_cfi')
 process.pAna = cms.EndPath(process.skimanalysis)
 
 #from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 #process.hltfilter = hltHighLevel.clone(
 #    HLTPaths = [
-#        #"HLT_HIZeroBias_v4",                                                     
+#        #"HLT_HIZeroBias_v4",
 #        "HLT_HIMinimumBias_v2",
 #    ]
 #)
